@@ -47,7 +47,7 @@ Two idempotent endpoints, protected by `Authorization: Bearer $CRON_SECRET`; ove
 - `POST /api/internal/webhooks/dispatch` sends due webhook deliveries
 - `POST /api/internal/events/process` runs internal event consumers (none registered until automations, step 7)
 
-**Vercel Schedules** call both every minute (`vercel.json`). This needs the **Pro plan**: Hobby limits schedules to once every 15 minutes. Set `CRON_SECRET` in the project's environment variables; Vercel sends it as the bearer token. Schedules run against the production deployment only; locally, call an endpoint by hand:
+**Vercel Schedules** call both every minute once the project is on the **Pro plan** (Hobby allows at most every 15 minutes). They are currently **off**: see [`TODO.md`](TODO.md). Set `CRON_SECRET` in the project's environment variables; Vercel sends it as the bearer token. Schedules run against the production deployment only; locally, call an endpoint by hand:
 
 ```bash
 curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/internal/webhooks/dispatch
