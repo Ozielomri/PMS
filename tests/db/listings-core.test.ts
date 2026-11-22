@@ -56,7 +56,7 @@ describe("listings (core contract)", () => {
     const { accountId, admin } = await createAccount();
     const id = await insertListing(admin, accountId);
     await asUser(admin, (db) => db.query("update public.listings set min_nights = 3 where id = $1", [id]));
-    const events = await query("select type, payload->'changes' as changes from public.domain_events where entity_id = $1 order by seq", [id]);
+    const events = await query("select type, payload->'changes' as changes from public.domain_events where entity_id = $1 and type like 'listing.%' order by seq", [id]);
     expect(events).toEqual([
       { type: "listing.created", changes: null },
       { type: "listing.updated", changes: { min_nights: { old: 1, new: 3 } } },

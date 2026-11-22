@@ -17,6 +17,10 @@ const ACCOUNT_SCOPED_TABLES = [
   "webhook_deliveries",
   "webhook_delivery_attempts",
   "listings",
+  "calendar_days",
+  "calendar_holds",
+  "calendar_changes",
+  "calendar_api_tokens",
 ];
 
 describe("row level security", () => {
@@ -103,6 +107,7 @@ describe("row level security", () => {
     );
     expect(rows.map((r) => r.fn)).toEqual([
       "can_access_listing",
+      "can_view_listing_calendar",
       "current_aal",
       "has_permission",
       "is_member",
@@ -119,6 +124,12 @@ describe("row level security", () => {
       "select public.complete_event(1, true)",
       "select * from public.claim_webhook_deliveries()",
       "select public.record_webhook_attempt(gen_random_uuid(), true)",
+      "select public.place_hold(gen_random_uuid(), current_date, current_date + 1, 'reservation')",
+      "select public.release_hold(gen_random_uuid())",
+      "select public.move_hold(gen_random_uuid(), current_date, current_date + 1)",
+      "select public.apply_pricing_tool_updates('x', '[]'::jsonb)",
+      "select public.extend_calendar_horizon()",
+      "select public.expire_calendar_holds()",
     ]) {
       await expect(asUser(admin, (db) => db.query(sql))).rejects.toThrow(/permission denied/);
     }
