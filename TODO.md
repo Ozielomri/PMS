@@ -1,5 +1,14 @@
 # TODO
 
+## Privacy: AI provider data agreement (CCPA/CPRA)
+
+The AI agent (`docs/plans/ai-agent.md`) sends guest data (names, messages, stay details) to the AI provider. Before any real guest data is used:
+
+1. Sign a data processing agreement with the AI provider (service-provider terms under CCPA/CPRA; no training on our data).
+2. Update the privacy policy: which guest data goes to the AI provider, for what purpose, and how long it is kept.
+3. Decide what the agent may never send (e.g. secret custom fields outside check-in day) and enforce it in code.
+4. Remove this item.
+
 ## Move to Vercel Pro and enable the schedules
 
 The demo deployment runs on the Vercel **Hobby** plan, which allows a schedule at most every 15 minutes. The workers need every minute (webhooks, event consumers; automations later need jobs within 60 s), so the schedules are switched **off** for now. Until they are on:
