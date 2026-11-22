@@ -131,7 +131,7 @@ export function QuoteForm({ listings, initial, origin }: { listings: BookableLis
               <span>Hold the nights until the quote expires (otherwise availability is checked again when the guest accepts)</span>
             </label>
             <Field label="Message to the guest" htmlFor="message">
-              <textarea id="message" name="message" rows={3} maxLength={5000} className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
+              <textarea id="message" name="message" rows={3} maxLength={5000} className="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
             </Field>
           </div>
         </Card>

@@ -20,7 +20,7 @@ export function LoginForm() {
     <div className="space-y-4">
       {linkError ? <Alert tone="error">That link is invalid or has expired. Request a new one.</Alert> : null}
 
-      <div role="tablist" aria-label="Sign-in method" className="grid grid-cols-2 rounded-md bg-slate-100 p-1 text-sm dark:bg-slate-800">
+      <div role="tablist" aria-label="Sign-in method" className="grid grid-cols-2 rounded-xl bg-slate-100 p-1 text-sm dark:bg-slate-800">
         {(["password", "link"] as const).map((m) => (
           <button
             key={m}

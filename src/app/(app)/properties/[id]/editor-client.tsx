@@ -37,7 +37,7 @@ export function CountedTextarea({ id, name, label, limit, defaultValue }: { id: 
         maxLength={10000}
         defaultValue={defaultValue}
         onChange={(e) => setValue(e.target.value)}
-        className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-700 dark:bg-slate-900"
+        className="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-700 dark:bg-slate-900"
       />
     </div>
   );
@@ -106,7 +106,7 @@ export function SecretField({ listingId, fieldId, label, isSet, canEdit }: { lis
   const [state, action, pending] = useActionState(saveSecretValue.bind(null, listingId, fieldId), null);
 
   return (
-    <div className="space-y-2 rounded-md border border-slate-200 p-3 dark:border-slate-800">
+    <div className="space-y-2 rounded-xl border border-slate-200 p-3 dark:border-slate-800">
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm font-medium">{label}</span>
         <Badge tone="amber">Secret</Badge>
@@ -276,7 +276,7 @@ export function PhotoManager({
               if (dragged.current) void move(dragged.current, p.id);
               dragged.current = null;
             }}
-            className="space-y-2 rounded-lg border border-slate-200 p-2 dark:border-slate-800"
+            className="space-y-2 rounded-2xl border border-slate-200 p-2 dark:border-slate-800"
           >
             <div className="relative">
               {/* Variants come from Supabase image transformations (lib/properties/photos.ts). */}

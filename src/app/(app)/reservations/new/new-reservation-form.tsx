@@ -151,7 +151,7 @@ export function NewReservationForm({
                   name="note"
                   rows={3}
                   maxLength={10000}
-                  className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                  className="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
                 />
               </Field>
             </div>

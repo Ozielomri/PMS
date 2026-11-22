@@ -56,10 +56,10 @@ async function Invitation({ params }: { params: Promise<{ token: string }> }) {
       </p>
       {!ctx ? (
         <div className="flex gap-2">
-          <Link className="flex-1 rounded-md bg-slate-900 px-3 py-2 text-center text-sm font-medium text-white dark:bg-slate-100 dark:text-slate-900" href={`/signup?next=${encodeURIComponent(here)}`}>
+          <Link className="flex-1 rounded-full bg-brand-600 px-3 py-2 text-center text-sm font-medium text-white" href={`/signup?next=${encodeURIComponent(here)}`}>
             Create account
           </Link>
-          <Link className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-medium dark:border-slate-700" href={`/login?next=${encodeURIComponent(here)}`}>
+          <Link className="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-center text-sm font-medium dark:border-slate-700" href={`/login?next=${encodeURIComponent(here)}`}>
             Sign in
           </Link>
         </div>

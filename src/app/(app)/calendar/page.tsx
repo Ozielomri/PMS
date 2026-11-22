@@ -47,7 +47,7 @@ async function Calendar({ searchParams }: { searchParams: Promise<Record<string,
         description="All listings, night by night. Multi-units show free units; their bookings appear on the unit rows."
         actions={
           ctx.can("calendar.edit") ? (
-            <Link href="/calendar/bulk" className="inline-flex items-center rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+            <Link href="/calendar/bulk" className="inline-flex items-center rounded-full border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
               Bulk edit
             </Link>
           ) : undefined
@@ -55,17 +55,17 @@ async function Calendar({ searchParams }: { searchParams: Promise<Record<string,
       />
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1">
-          <Link href={link({ from: addDays(from, -days) })} className="rounded-md border border-slate-300 px-2 py-1.5 text-sm dark:border-slate-700" aria-label="Earlier">
+          <Link href={link({ from: addDays(from, -days) })} className="rounded-xl border border-slate-300 px-2 py-1.5 text-sm dark:border-slate-700" aria-label="Earlier">
             ←
           </Link>
-          <Link href={link({ from: addDays(today, -1) })} className="rounded-md border border-slate-300 px-3 py-1.5 text-sm dark:border-slate-700">
+          <Link href={link({ from: addDays(today, -1) })} className="rounded-xl border border-slate-300 px-3 py-1.5 text-sm dark:border-slate-700">
             Today
           </Link>
-          <Link href={link({ from: addDays(from, days) })} className="rounded-md border border-slate-300 px-2 py-1.5 text-sm dark:border-slate-700" aria-label="Later">
+          <Link href={link({ from: addDays(from, days) })} className="rounded-xl border border-slate-300 px-2 py-1.5 text-sm dark:border-slate-700" aria-label="Later">
             →
           </Link>
         </div>
-        <div className="flex overflow-hidden rounded-md border border-slate-300 text-sm dark:border-slate-700" role="group" aria-label="Zoom">
+        <div className="flex overflow-hidden rounded-xl border border-slate-300 text-sm dark:border-slate-700" role="group" aria-label="Zoom">
           {ZOOMS.map((z) => (
             <Link key={z} href={link({ days: z })} aria-current={z === days ? "true" : undefined} className={cx("px-3 py-1.5", z === days ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900" : "hover:bg-slate-50 dark:hover:bg-slate-800")}>
               {z === 31 ? "Month" : `${z} days`}

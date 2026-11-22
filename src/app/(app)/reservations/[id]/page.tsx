@@ -342,7 +342,7 @@ async function GuestTab({ r, canEdit, canMerge }: { r: Detail; canEdit: boolean;
               </div>
               <div className="sm:col-span-2">
                 <Field label="Notes" htmlFor="g_notes">
-                  <textarea id="g_notes" name="notes" rows={3} defaultValue={g.notes ?? ""} maxLength={5000} className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
+                  <textarea id="g_notes" name="notes" rows={3} defaultValue={g.notes ?? ""} maxLength={5000} className="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
                 </Field>
               </div>
             </div>
@@ -535,12 +535,12 @@ async function NotesTab({ r, canEdit }: { r: Detail; canEdit: boolean }) {
       <Card title="Internal notes" description="Visible to the team only; notes cannot be edited or deleted.">
         {canEdit ? (
           <ActionForm action={addNote} fields={{ reservationId: r.id }} label="Add note" className="mb-4 space-y-2">
-            <textarea name="body" rows={3} required maxLength={10000} aria-label="Note" className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
+            <textarea name="body" rows={3} required maxLength={10000} aria-label="Note" className="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
           </ActionForm>
         ) : null}
         <ul className="space-y-3">
           {(notes ?? []).map((n) => (
-            <li key={n.id} className="rounded-md bg-slate-50 p-3 text-sm dark:bg-slate-800">
+            <li key={n.id} className="rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800">
               <p className="whitespace-pre-wrap">{n.body}</p>
               <p className="mt-1 text-xs text-slate-500">{formatDateTime(n.created_at, r.listing?.timezone)}</p>
             </li>

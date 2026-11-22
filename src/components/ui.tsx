@@ -12,9 +12,9 @@ export function Button({
   return (
     <button
       className={cx(
-        "inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
-        variant === "primary" && "bg-slate-900 text-white hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white",
-        variant === "secondary" && "border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800",
+        "inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50",
+        variant === "primary" && "bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600",
+        variant === "secondary" && "border border-slate-300 bg-transparent text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800",
         variant === "danger" && "bg-red-600 text-white hover:bg-red-500",
         variant === "ghost" && "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
         className,
@@ -28,7 +28,7 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   return (
     <input
       className={cx(
-        "block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100",
+        "block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100",
         className,
       )}
       {...props}
@@ -40,7 +40,7 @@ export function Select({ className, ...props }: SelectHTMLAttributes<HTMLSelectE
   return (
     <select
       className={cx(
-        "block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100",
+        "block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100",
         className,
       )}
       {...props}
@@ -62,8 +62,8 @@ export function Field({ label, htmlFor, hint, children }: { label: string; htmlF
 
 export function Card({ title, description, children, className }: { title?: string; description?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cx("rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900", className)}>
-      {title ? <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2> : null}
+    <section className={cx("rounded-[22px] border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900", className)}>
+      {title ? <h2 className="font-display text-xl text-slate-900 dark:text-slate-100">{title}</h2> : null}
       {description ? <p className="mt-1 text-sm text-slate-500">{description}</p> : null}
       <div className={title || description ? "mt-4" : undefined}>{children}</div>
     </section>
@@ -75,7 +75,7 @@ export function Alert({ tone = "info", children }: { tone?: "info" | "error" | "
     <div
       role={tone === "error" ? "alert" : "status"}
       className={cx(
-        "rounded-md px-3 py-2 text-sm",
+        "rounded-xl px-3 py-2 text-sm",
         tone === "info" && "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200",
         tone === "error" && "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200",
         tone === "success" && "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200",
@@ -106,7 +106,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
+        <h1 className="font-display text-3xl text-slate-900 sm:text-4xl dark:text-slate-100">{title}</h1>
         {description ? <p className="mt-1 text-sm text-slate-500">{description}</p> : null}
       </div>
       {actions}

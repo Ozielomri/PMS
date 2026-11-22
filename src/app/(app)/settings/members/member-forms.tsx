@@ -86,7 +86,7 @@ export function MemberControls({ membership, isSelf }: { membership: MembershipV
       {state?.error ? <Alert tone="error">{state.error}</Alert> : null}
 
       {membership.role !== "admin" ? (
-        <details className="rounded-md border border-slate-200 p-3 text-sm dark:border-slate-800">
+        <details className="rounded-xl border border-slate-200 p-3 text-sm dark:border-slate-800">
           <summary className="cursor-pointer font-medium">
             Listing access: {membership.scope === "all" ? "all listings" : `${membership.tags.length} tags, ${membership.listingIds.length} listings`}
           </summary>

@@ -49,7 +49,9 @@ async function Dashboard({ searchParams }: { searchParams: Promise<Record<string
 
   return (
     <>
-      <PageHeader title={ctx.active.accountName} description={`Signed in as ${ctx.user.email ?? "unknown"} · ${ROLE_LABELS[ctx.active.role]}`} />
+      {ctx.can("reservations.view") ? null : (
+        <PageHeader title={ctx.active.accountName} description={`Signed in as ${ctx.user.email ?? "unknown"} · ${ROLE_LABELS[ctx.active.role]}`} />
+      )}
       {denied ? (
         <div className="mb-6">
           <Alert tone="error">You do not have permission to open that page.</Alert>
@@ -57,11 +59,12 @@ async function Dashboard({ searchParams }: { searchParams: Promise<Record<string
       ) : null}
 
       {ctx.can("reservations.view") ? (
-        <Suspense fallback={<Skeleton lines={4} />}>
+        <Suspense fallback={<Skeleton lines={6} />}>
           <Today ctx={ctx} />
         </Suspense>
       ) : null}
 
+      <h2 className="mb-4 mt-12 font-display text-2xl">{ctx.active.accountName}</h2>
       <div className="grid gap-6 lg:grid-cols-2">
         <Card title="Your access" description="What your role can do in this account. Enforced by the database, not just this screen.">
           <dl className="space-y-3 text-sm">

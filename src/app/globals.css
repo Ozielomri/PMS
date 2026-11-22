@@ -1,10 +1,50 @@
 @import "tailwindcss";
 
+/*
+ * Design direction 3, "Warm Hospitality": warm sand neutrals, terracotta accent, Fraunces
+ * display type over Inter. The neutral scale is defined once here as `slate-*` so every screen
+ * (which uses slate classes) picks up the warm palette; `brand-*` is the terracotta accent.
+ */
+@theme {
+  --color-slate-50: #f6f1ea;
+  --color-slate-100: #efe6da;
+  --color-slate-200: #e7dccd;
+  --color-slate-300: #d6c7b3;
+  --color-slate-400: #a8998a;
+  --color-slate-500: #6f665e;
+  --color-slate-600: #57534e;
+  --color-slate-700: #44403c;
+  --color-slate-800: #3a2f28;
+  --color-slate-900: #292019;
+  --color-slate-950: #1c1612;
+  --color-white: #fffbf5;
+
+  --color-brand-50: #fff4ec;
+  --color-brand-100: #ffe5d3;
+  --color-brand-500: #d9551b;
+  --color-brand-600: #c2410c;
+  --color-brand-700: #9a3412;
+  --color-brand-800: #7c2d12;
+}
+
 @theme inline {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 body {
   font-family: var(--font-sans);
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
 }

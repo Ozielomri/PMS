@@ -54,7 +54,7 @@ async function Reservations({ searchParams }: { searchParams: Promise<Record<str
         description={`${total} reservation${total === 1 ? "" : "s"}`}
         actions={
           <div className="flex flex-wrap gap-2">
-            <a href={`/reservations/export?${query}`} className="inline-flex items-center rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+            <a href={`/reservations/export?${query}`} className="inline-flex items-center rounded-full border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
               Export CSV
             </a>
             {ctx.can("reservations.create") ? (
@@ -172,7 +172,7 @@ async function Reservations({ searchParams }: { searchParams: Promise<Record<str
           <p className="text-sm text-slate-500">No reservations match.</p>
         </Card>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-800/50">
               <tr>

@@ -128,15 +128,15 @@ async function Properties({ searchParams }: { searchParams: Promise<Record<strin
         description={`${total} listing${total === 1 ? "" : "s"}. Sub-units are listed under their multi-unit.`}
         actions={
           <div className="flex flex-wrap gap-2">
-            <a href={exportHref} className="inline-flex items-center rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+            <a href={exportHref} className="inline-flex items-center rounded-full border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
               Export CSV
             </a>
             {ctx.can("properties.manage") ? (
               <>
-                <Link href="/properties/custom-fields" className="inline-flex items-center rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+                <Link href="/properties/custom-fields" className="inline-flex items-center rounded-full border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
                   Custom fields
                 </Link>
-                <Link href="/properties/new" className="inline-flex items-center rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900">
+                <Link href="/properties/new" className="inline-flex items-center rounded-full bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700">
                   New listing
                 </Link>
               </>

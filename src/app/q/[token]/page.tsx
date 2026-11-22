@@ -63,7 +63,7 @@ async function PublicQuote({ params }: { params: Promise<{ token: string }> }) {
         <h1 className="mt-1 text-2xl font-semibold">Hi {q.guest_first_name}, here is your quote</h1>
         {q.status === "open" ? <p className="mt-1 text-sm text-slate-500">Valid until {formatDateTime(q.expires_at)} (Eastern time).</p> : null}
       </div>
-      {q.message ? <p className="whitespace-pre-wrap rounded-md bg-slate-50 p-4 text-sm dark:bg-slate-900">{q.message}</p> : null}
+      {q.message ? <p className="whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-sm dark:bg-slate-900">{q.message}</p> : null}
       {q.status === "expired" ? <Alert>This quote has expired. Contact {q.account_name} for a new one.</Alert> : null}
       {q.status === "canceled" ? <Alert>This quote was withdrawn.</Alert> : null}
       {q.status === "accepted" ? <Alert tone="success">You booked this quote. Thank you!</Alert> : null}
