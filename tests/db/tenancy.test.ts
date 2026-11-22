@@ -30,6 +30,16 @@ const ACCOUNT_SCOPED_TABLES = [
   "calendar_holds",
   "calendar_changes",
   "calendar_api_tokens",
+  // Step 4 — reservations
+  "guests",
+  "reservations",
+  "reservation_lines",
+  "reservation_payments",
+  "reservation_activity",
+  "reservation_notes",
+  "reservation_files",
+  "reservation_source_settings",
+  "reservation_saved_views",
 ];
 
 describe("row level security", () => {
@@ -116,13 +126,17 @@ describe("row level security", () => {
     );
     expect(rows.map((r) => r.fn)).toEqual([
       "can_access_listing",
+      "can_access_reservation_file_path", // storage.objects policies (step 4)
       "can_edit_listing_photo_path", // storage.objects policies (step 3)
       "can_view_listing_calendar",
+      "can_view_reservation",
       "current_aal",
       "has_permission",
+      "is_channel_source",
       "is_member",
       "listing_scope_tags",
       "member_role",
+      "reservation_totals", // security invoker, used by the reservation_balances view
       "shares_account_with",
     ]);
   });
