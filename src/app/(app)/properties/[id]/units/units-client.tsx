@@ -13,7 +13,7 @@ import {
   type ListingStatus,
 } from "@/lib/properties/constants";
 
-import { ActionForm } from "../../_components/action-form";
+import { ActionForm } from "@/components/action-form";
 import { addSubUnits, convertSubUnit, moveSubUnit, setCleaningStatus, setSubUnitArchived } from "./actions";
 
 export function AddSubUnitsForm({ parentId }: { parentId: string }) {

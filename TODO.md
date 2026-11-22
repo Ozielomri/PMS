@@ -5,7 +5,8 @@
 The demo deployment runs on the Vercel **Hobby** plan, which allows a schedule at most every 15 minutes. The workers need every minute (webhooks, event consumers; automations later need jobs within 60 s), so the schedules are switched **off** for now. Until they are on:
 
 - webhook deliveries stay queued (nothing is sent);
-- the calendar is not extended past its initial 730+ days, and expired holds are only ignored, not swept.
+- the calendar is not extended past its initial 730+ days, and expired holds are only ignored, not swept;
+- requests past their approval deadline and expired quotes are only swept when someone opens the reservation list, the dashboard or the quotes page.
 
 Steps:
 
@@ -26,6 +27,10 @@ Steps:
   "calendar-maintenance": {
     "schedule": "17 * * * *",
     "path": "/api/calendar/machine/maintenance"
+  },
+  "reservation-expiry": {
+    "schedule": "*/5 * * * *",
+    "path": "/api/internal/reservations/expire"
   }
 }
 ```

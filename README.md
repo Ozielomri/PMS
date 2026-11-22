@@ -42,10 +42,11 @@ The DB suite runs on plain Postgres: `tests/db/supabase-shim.sql` adds the few S
 
 ## Background workers
 
-Two idempotent endpoints, protected by `Authorization: Bearer $CRON_SECRET`; overlapping runs are safe:
+Idempotent endpoints, protected by `Authorization: Bearer $CRON_SECRET`; overlapping runs are safe:
 
 - `POST /api/internal/webhooks/dispatch` sends due webhook deliveries
 - `POST /api/internal/events/process` runs internal event consumers (none registered until automations, step 7)
+- `POST /api/internal/reservations/expire` expires requests past their approval deadline, closes past inquiries and expires quotes (the reservation list, dashboard and quotes page also sweep their own account on load)
 
 **Vercel Schedules** call both every minute once the project is on the **Pro plan** (Hobby allows at most every 15 minutes). They are currently **off**: see [`TODO.md`](TODO.md). Set `CRON_SECRET` in the project's environment variables; Vercel sends it as the bearer token. Schedules run against the production deployment only; locally, call an endpoint by hand:
 
@@ -60,6 +61,15 @@ Listings, multi-units, content, photos, custom fields and the change log: [`docs
 - **Photos** go to the Supabase Storage bucket `listing-photos` (created by migration `20261122002100`, public read, 25 MB, JPEG/PNG/HEIC). Resized variants come from **Supabase image transformations** (Pro plan); without them, swap `photoUrl()` in `src/lib/properties/photos.ts` for server-side resizing.
 - **Secret custom fields** (door codes) are encrypted with `PMS_ENCRYPTION_KEY` before they reach the database; `resolveListingVariables()` in `src/lib/properties/variables.ts` turns listing values into `{{custom.*}}` / `{{listing.*}}` message variables for the Inbox.
 - Activation, archive, timezone and multi-unit rules are enforced in the database; a listing can only be `active` with address, timezone, capacity, base price, check-in/out times and a photo.
+
+## Reservations and calendar screens (step 4)
+
+Plan: [`docs/plans/step-4-reservations.md`](docs/plans/step-4-reservations.md). The status machine, money, refunds, channel ingest and quotes live in the database (migrations `20261123001000`–`20261123002200`); the screens call those RPCs.
+
+- `/calendar`: multi-calendar. Drag across nights for a menu (reservation, quote, owner stay, block/unblock, price and minimum nights); click a booking for its summary; drag a direct booking to another row or dates to move it (preview first). Multi-units show free units; their bookings sit on the unit rows. `/calendar/[listingId]` is the month view, `/calendar/bulk` the bulk editor with preview.
+- `/reservations`: quick tabs, filters, saved views, CSV export. Detail page with status actions, alterations (preview → confirm), cancellation with refund preview, unit reassignment, extras/adjustments, payments, notes, private files (bucket `reservation-files`) and the activity log.
+- `/reservations/quotes`: quotes with up to 10 options; the guest opens `/q/<token>` (public) and books one option at the quoted price.
+- `/search` and the top-bar box search codes, guests, emails, phones and listings. `/settings/reservations` sets the approval window per source.
 
 ## Layout
 

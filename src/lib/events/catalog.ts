@@ -29,11 +29,15 @@ export const EVENT_TYPES = {
 
   // CAL-14
   "calendar.updated": { module: "calendar", planned: false },
-  // RES-19
-  "reservation.created": { module: "reservations", planned: true },
-  "reservation.updated": { module: "reservations", planned: true },
-  "reservation.status_changed": { module: "reservations", planned: true },
-  "reservation.dates_changed": { module: "reservations", planned: true },
+  // Step 4 — reservations (RES-19)
+  "reservation.created": { module: "reservations", planned: false },
+  "reservation.updated": { module: "reservations", planned: false },
+  "reservation.status_changed": { module: "reservations", planned: false },
+  "reservation.dates_changed": { module: "reservations", planned: false },
+  "guest.created": { module: "reservations", planned: false },
+  "guest.updated": { module: "reservations", planned: false },
+  "quote.created": { module: "reservations", planned: false },
+  "quote.updated": { module: "reservations", planned: false },
   // INB-16
   "message.received": { module: "inbox", planned: true },
   "message.sent": { module: "inbox", planned: true },

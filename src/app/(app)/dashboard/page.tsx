@@ -8,6 +8,7 @@ import type { DomainEvent } from "@/lib/events/types";
 import { createClient } from "@/lib/supabase/server";
 
 import { LiveEvents } from "./live-events";
+import { Today } from "./today";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -53,6 +54,12 @@ async function Dashboard({ searchParams }: { searchParams: Promise<Record<string
         <div className="mb-6">
           <Alert tone="error">You do not have permission to open that page.</Alert>
         </div>
+      ) : null}
+
+      {ctx.can("reservations.view") ? (
+        <Suspense fallback={<Skeleton lines={4} />}>
+          <Today ctx={ctx} />
+        </Suspense>
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">

@@ -17,7 +17,7 @@ import { getActivationProblems, getListing } from "@/lib/properties/queries";
 import { EDITOR_TABS, SUB_UNIT_TABS, TAB_LABELS, isEditorTab, type EditorTab } from "@/lib/properties/schemas";
 import { createClient } from "@/lib/supabase/server";
 
-import { ActionForm } from "../_components/action-form";
+import { ActionForm } from "@/components/action-form";
 import { GuardedLink, UnsavedChangesProvider } from "../_components/autosave";
 import { duplicateListing, setListingStatus } from "../actions";
 import { TabContent } from "./tabs";

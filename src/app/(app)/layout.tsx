@@ -10,8 +10,11 @@ import { AccountSwitcher } from "./account-switcher";
 
 const NAV: { href: string; label: string; permission: Permission }[] = [
   { href: "/dashboard", label: "Dashboard", permission: "account.view" },
+  { href: "/calendar", label: "Calendar", permission: "calendar.view" },
+  { href: "/reservations", label: "Reservations", permission: "reservations.view" },
   { href: "/properties", label: "Properties", permission: "properties.view" },
   { href: "/settings/members", label: "Team", permission: "account.manage_users" },
+  { href: "/settings/reservations", label: "Booking settings", permission: "reservations.manage" },
   { href: "/settings/webhooks", label: "Webhooks", permission: "webhooks.manage" },
   { href: "/settings/audit", label: "Audit log", permission: "audit.view" },
 ];
@@ -46,6 +49,20 @@ async function TopBar() {
         ))}
       </nav>
       <div className="flex items-center gap-3 text-sm">
+        {ctx.can("reservations.view") || ctx.can("properties.view") ? (
+          <form action="/search" role="search">
+            <label htmlFor="top-search" className="sr-only">
+              Search
+            </label>
+            <input
+              id="top-search"
+              name="q"
+              type="search"
+              placeholder="Search…"
+              className="w-36 rounded-md border border-slate-300 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-900"
+            />
+          </form>
+        ) : null}
         <AccountSwitcher
           activeAccountId={ctx.active.accountId}
           accounts={ctx.memberships.map((m) => ({ id: m.accountId, name: m.accountName }))}
