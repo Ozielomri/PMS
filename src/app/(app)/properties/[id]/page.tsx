@@ -40,7 +40,10 @@ async function Editor({ params, searchParams }: { params: Promise<{ id: string }
   const listing = await getListing(supabase, id);
   if (!listing) notFound();
 
-  const tabs: readonly EditorTab[] = listing.type === "sub_unit" ? SUB_UNIT_TABS : EDITOR_TABS;
+  // iCal settings (CAL-09/10) need calendar.manage; a complex has no calendar.
+  const tabs: readonly EditorTab[] = (listing.type === "sub_unit" ? SUB_UNIT_TABS : EDITOR_TABS).filter(
+    (t) => t !== "ical" || (ctx.can("calendar.manage") && listing.type !== "complex"),
+  );
   const tab: EditorTab = isEditorTab(sp.tab) && tabs.includes(sp.tab) ? sp.tab : "overview";
   const wizard = sp.wizard === "1";
   const [problems, parent] = await Promise.all([

@@ -47,6 +47,8 @@ Idempotent endpoints, protected by `Authorization: Bearer $CRON_SECRET`; overlap
 - `POST /api/internal/webhooks/dispatch` sends due webhook deliveries
 - `POST /api/internal/events/process` runs internal event consumers (none registered until automations, step 7)
 - `POST /api/internal/reservations/expire` expires requests past their approval deadline, closes past inquiries and expires quotes (the reservation list, dashboard and quotes page also sweep their own account on load)
+- `POST /api/internal/ical/sync` imports due iCal feeds (CAL-10; schedule every 15 minutes)
+- `POST /api/internal/inbox/send` sends queued guest messages with retries and backoff (sending a reply also kicks it for that account, so replies go out without the schedule)
 
 **Vercel Schedules** call both every minute once the project is on the **Pro plan** (Hobby allows at most every 15 minutes). They are currently **off**: see [`TODO.md`](TODO.md). Set `CRON_SECRET` in the project's environment variables; Vercel sends it as the bearer token. Schedules run against the production deployment only; locally, call an endpoint by hand:
 
@@ -71,6 +73,34 @@ Plan: [`docs/plans/step-4-reservations.md`](docs/plans/step-4-reservations.md). 
 - `/reservations/quotes`: quotes with up to 10 options; the guest opens `/q/<token>` (public) and books one option at the quoted price.
 - `/search` and the top-bar box search codes, guests, emails, phones and listings. `/settings/reservations` sets the approval window per source.
 
+## iCal (step 5)
+
+Plan: [`docs/plans/step-5-ical.md`](docs/plans/step-5-ical.md); migration `20261124001000_ical.sql`; code in `src/lib/ical/`. Settings in the listing editor's **iCal** tab (`calendar.manage`).
+
+- **Export (CAL-09):** `GET /ical/<token>.ics`, public and availability only ("Not available" all-day events, no guest data). Only the token's sha256 is used for lookups; the token is also stored encrypted with `PMS_ENCRYPTION_KEY` so the editor can show the URL again. Rotate or revoke from the tab.
+- **Import (CAL-10):** feed URLs are stored encrypted; the worker (`/api/internal/ical/sync`) or **Sync now** fetches them (https and public hosts only, 15 s, 5 MB, conditional GET), and the database diffs the events into `ical` holds. Overlaps with bookings are shown on the feed, never resolved by deleting anything. Locally, `WEBHOOKS_ALLOW_PRIVATE_NETWORKS=1` also allows http and private hosts for feeds.
+
+## Inbox (step 6)
+
+Plan: [`docs/plans/step-6-inbox.md`](docs/plans/step-6-inbox.md). Migrations `20261125001000`–`20261125001200`.
+
+- `/inbox`: three columns (conversation list · thread and composer · context panel), two on tablet, stacked on mobile. Tabs Unanswered, Assigned to me, Unassigned, Pending approval, Arriving in 48 h, In house, Done, All; filters by channel, listing and tag; full-text search across messages. New messages appear live (Supabase Realtime).
+- Composer: reply by email or add an internal note (with @mentions); saved replies via `/shortcut` or the picker; variables (`{{guest.first_name}}`, `{{reservation.check_in}}`, `{{listing.title}}`, `{{custom.door_code}}`, …) with a live preview of the resolved text. A reply with an unresolved or empty variable cannot be sent (the database refuses it too). Delivery status per message: queued, sent, delivered, failed with the reason; retry or discard.
+- Context panel: reservation with approve / decline, guest and stay history, listing times, address and custom fields (secret ones decrypted on the server for people who can reply), response time, tags.
+- `/inbox/saved-replies`: saved replies with variables and language variants, preview against a sample reservation. `/inbox/log`: outbound deliveries, inbound emails and how each was matched, response time per user, the inbound address, sender name and the AI switch.
+- The reservation page's **Messages** tab shows the same thread and composer.
+- **Threading:** one conversation per guest per reservation. Inbound email is matched by the reply token in the address (`<account token>+<reply token>@INBOX_INBOUND_DOMAIN`) or the subject (`[#token]`), then by `In-Reply-To` / `References`, then by the sender's email (a known guest goes to their current or next reservation); otherwise it starts a conversation without a reservation that attaches when a booking for that email is created. Mail for an unknown address is stored unmatched. Messages are never edited or deleted.
+- **Email adapter** (`src/lib/inbox/email/`): Postmark (`POSTMARK_SERVER_TOKEN`), or the development `log` adapter when no token is set. With `log` nothing leaves the server, messages are marked delivered, and the context panel offers **Simulate guest reply** (it runs the real inbound matching). Inbound webhook `POST /api/internal/inbox/email/inbound`, delivery/bounce webhook `POST /api/internal/inbox/email/events`, both authorized with `INBOX_WEBHOOK_SECRET` (Basic auth password, Bearer, or an `X-PMS-Signature` HMAC of the body). The log adapter accepts a generic JSON body, so you can try it with curl (the account's inbound address is on `/inbox/log`):
+
+  ```bash
+  curl -X POST -H "Authorization: Bearer $INBOX_WEBHOOK_SECRET" -H 'content-type: application/json' \
+    -d '{"message_id":"t1","from":"Ada <ada@example.com>","to":["TOKEN@in.example.com"],"subject":"Hi","text":"Is parking free?"}' \
+    http://localhost:3000/api/internal/inbox/email/inbound
+  ```
+
+- **AI drafts (INB-11, AI-first):** "Suggest reply" asks the agent (role `agent`, actor type `agent`; see [`docs/plans/ai-agent.md`](docs/plans/ai-agent.md)) for a draft grounded in the thread, the reservation and the listing's content and non-secret custom fields. The draft is stored in the approval queue (`agent_proposals`) and shown in the composer; a person edits and sends it. Nothing is sent automatically. Needs `ANTHROPIC_API_KEY` and `SUPABASE_SECRET_KEY`; without them the button is disabled with the reason. Switch it off per account on `/inbox/log`.
+- **Events:** `message.received`, `message.queued`, `message.sent`, `message.delivered`, `message.failed`, `message.discarded`, `message.note_added`, `conversation.created/updated`, `saved_reply.*`, `inbox_settings.updated`, `agent_proposal.*`.
+
 ## Layout
 
 ```
@@ -80,6 +110,8 @@ src/lib/events/        event catalog, envelope type, internal bus worker
 src/lib/webhooks/      dispatcher, HMAC signatures, SSRF guard, Supabase RPC stores
 src/lib/crypto/        AES-256-GCM field encryption
 src/lib/properties/    listing constants, form schemas, photos, secrets, message variables, CSV export
+src/lib/inbox/         message variables, delivery status machine, email adapter (Postmark / log), outbox worker, filters
+src/lib/ai/            LLM provider interface, Anthropic implementation, reply drafts
 src/app/               pages: login, signup, mfa, onboarding, invite, dashboard, settings (team, webhooks, audit)
 tests/unit|db|e2e/     Vitest unit, Vitest + Postgres, Playwright
 ```

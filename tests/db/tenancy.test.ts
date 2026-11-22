@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 
+import { createListing, day } from "./calendar-fixtures";
 import { as, addMember, asUser, createAccount, query } from "./helpers";
 
 const ACCOUNT_SCOPED_TABLES = [
@@ -40,6 +41,19 @@ const ACCOUNT_SCOPED_TABLES = [
   "reservation_files",
   "reservation_source_settings",
   "reservation_saved_views",
+  // Step 5 — iCal
+  "ical_exports",
+  "ical_feeds",
+  "ical_feed_events",
+  // Step 6 — inbox
+  "inbox_settings",
+  "conversations",
+  "messages",
+  "message_deliveries",
+  "inbound_emails",
+  "saved_replies",
+  "conversation_reads",
+  "agent_proposals",
 ];
 
 describe("row level security", () => {
@@ -62,6 +76,14 @@ describe("row level security", () => {
         [b.accountId],
       );
       await db.query("update public.accounts set name = 'Tenant B2' where id = $1", [b.accountId]);
+    });
+    // iCal rows in B (step 5): an export URL and a synced feed.
+    const listing = await createListing(b.accountId);
+    await asUser(b.admin, async (db) => {
+      await db.query("select public.create_ical_export(gen_random_uuid(), $1, repeat('a', 64), 'v1.x.y.z', 'abcd')", [listing]);
+      const feed = "00000000-0000-4000-8000-" + listing.slice(-12);
+      await db.query("select public.add_ical_feed($1, $2, 'Airbnb', 'v1.x.y.z', repeat('b', 64), 'example.com')", [feed, listing]);
+      await db.query("select public.apply_ical_feed_sync($1, $2::jsonb)", [feed, JSON.stringify([{ uid: "u", check_in: day(3), check_out: day(5) }])]);
     });
 
     const seen = await asUser(a.admin, async (db) => {
@@ -154,6 +176,13 @@ describe("row level security", () => {
       "select public.apply_pricing_tool_updates('x', '[]'::jsonb)",
       "select public.extend_calendar_horizon()",
       "select public.expire_calendar_holds()",
+      "select * from public.claim_ical_feeds()",
+      // Step 6 — inbox workers and the agent
+      "select public.ingest_inbound_email('test', '{}'::jsonb)",
+      "select * from public.claim_outbound_messages()",
+      "select public.record_outbound_result(gen_random_uuid(), 'sent')",
+      "select public.record_delivery_event('postmark', 'x', 'delivered')",
+      "select public.agent_propose_reply(gen_random_uuid(), 'x', gen_random_uuid())",
     ]) {
       await expect(asUser(admin, (db) => db.query(sql))).rejects.toThrow(/permission denied/);
     }

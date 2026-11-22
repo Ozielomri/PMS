@@ -19,6 +19,7 @@ export const EDITOR_TABS = [
   "fees",
   "custom-fields",
   "channels",
+  "ical",
   "log",
 ] as const;
 export type EditorTab = (typeof EDITOR_TABS)[number];
@@ -34,11 +35,12 @@ export const TAB_LABELS: Record<EditorTab, string> = {
   fees: "Fees and taxes",
   "custom-fields": "Custom fields",
   channels: "Channels",
+  ical: "iCal",
   log: "Log",
 };
 
 /** Tabs a sub-unit has: content and prices are edited on the parent. */
-export const SUB_UNIT_TABS: readonly EditorTab[] = ["overview", "custom-fields", "channels", "log"];
+export const SUB_UNIT_TABS: readonly EditorTab[] = ["overview", "custom-fields", "channels", "ical", "log"];
 
 export function isEditorTab(value: unknown): value is EditorTab {
   return typeof value === "string" && (EDITOR_TABS as readonly string[]).includes(value);

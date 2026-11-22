@@ -127,7 +127,7 @@ describe("secret custom fields", () => {
     expect(visible).toEqual([{ field_id: secret, secret_is_set: true, value_text: null }]);
 
     // Audit log and events: redacted / left out — no plaintext and no ciphertext.
-    const audit = await query<{ diff: unknown }>("select diff from public.audit_log where entity_type = 'listing_custom_values' and account_id = $1", [accountId]);
+    const audit = await query<{ diff: unknown }>("select diff from public.audit_log where entity_type = 'listing_custom_values' and account_id = $1 order by id", [accountId]);
     expect(audit).toHaveLength(2);
     expect(audit[1].diff).toEqual({ value_secret_ciphertext: { old: "[redacted]", new: "[redacted]" } });
     const events = await query<{ payload: unknown }>("select payload from public.domain_events where account_id = $1", [accountId]);
