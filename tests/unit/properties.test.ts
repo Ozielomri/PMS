@@ -71,7 +71,8 @@ describe("photos (PRP-06)", () => {
     expect(isPhotoPathFor(path, ACCOUNT, LISTING)).toBe(true);
     expect(isPhotoPathFor(`${ACCOUNT}/${LISTING}/../x.jpg`, ACCOUNT, LISTING)).toBe(false);
     expect(isPhotoPathFor(path, ACCOUNT, "0c98c383-5a69-4d2d-917f-000000000000")).toBe(false);
-    expect(photoUrl("https://x.supabase.co/", path, "thumb")).toBe(
+    expect(photoUrl("https://x.supabase.co/", path, "thumb", false)).toBe(`https://x.supabase.co/storage/v1/object/public/listing-photos/${path}`);
+    expect(photoUrl("https://x.supabase.co/", path, "thumb", true)).toBe(
       `https://x.supabase.co/storage/v1/render/image/public/listing-photos/${ACCOUNT}/${LISTING}/f1.jpg?width=320&height=240&resize=cover&quality=80`,
     );
     expect(photoUrl("https://x.supabase.co", path, "original")).toBe(`https://x.supabase.co/storage/v1/object/public/listing-photos/${path}`);

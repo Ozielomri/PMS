@@ -66,11 +66,19 @@ export function isPhotoPathFor(path: string, accountId: string, listingId: strin
   );
 }
 
-/** Public URL of a photo variant. */
-export function photoUrl(supabaseUrl: string, path: string, variant: PhotoVariant = "medium"): string {
+/**
+ * Whether Supabase image transformations (resized variants, Pro plan) are enabled. Without them
+ * the render endpoint answers 403, so every variant falls back to the original file.
+ */
+export function imageTransformsEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_SUPABASE_IMAGE_TRANSFORMS === "on";
+}
+
+/** Public URL of a photo variant (the original file unless image transformations are on). */
+export function photoUrl(supabaseUrl: string, path: string, variant: PhotoVariant = "medium", transforms = imageTransformsEnabled()): string {
   const base = supabaseUrl.replace(/\/$/, "");
   const encoded = path.split("/").map(encodeURIComponent).join("/");
-  if (variant === "original") return `${base}/storage/v1/object/public/${PHOTO_BUCKET}/${encoded}`;
+  if (variant === "original" || !transforms) return `${base}/storage/v1/object/public/${PHOTO_BUCKET}/${encoded}`;
   const v = PHOTO_VARIANTS[variant];
   const qs = new URLSearchParams({ width: String(v.width), height: String(v.height), resize: v.resize, quality: "80" });
   return `${base}/storage/v1/render/image/public/${PHOTO_BUCKET}/${encoded}?${qs}`;

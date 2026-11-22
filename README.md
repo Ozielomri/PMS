@@ -58,7 +58,7 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/i
 
 Listings, multi-units, content, photos, custom fields and the change log: [`docs/plans/step-3-properties.md`](docs/plans/step-3-properties.md). Screens under `/properties` (list with filters and bulk edit, create wizard, tabbed editor with autosave, multi-unit view, custom fields, CSV export).
 
-- **Photos** go to the Supabase Storage bucket `listing-photos` (created by migration `20261122002100`, public read, 25 MB, JPEG/PNG/HEIC). Resized variants come from **Supabase image transformations** (Pro plan); without them, swap `photoUrl()` in `src/lib/properties/photos.ts` for server-side resizing.
+- **Photos** go to the Supabase Storage bucket `listing-photos` (created by migration `20261122002100`, public read, 25 MB, JPEG/PNG/HEIC). Resized variants come from **Supabase image transformations** (Pro plan): set `NEXT_PUBLIC_SUPABASE_IMAGE_TRANSFORMS=on` once they are enabled. Until then the original files are shown (the render endpoint answers 403 on the free plan).
 - **Secret custom fields** (door codes) are encrypted with `PMS_ENCRYPTION_KEY` before they reach the database; `resolveListingVariables()` in `src/lib/properties/variables.ts` turns listing values into `{{custom.*}}` / `{{listing.*}}` message variables for the Inbox.
 - Activation, archive, timezone and multi-unit rules are enforced in the database; a listing can only be `active` with address, timezone, capacity, base price, check-in/out times and a photo.
 
