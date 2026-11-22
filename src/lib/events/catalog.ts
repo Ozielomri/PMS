@@ -16,6 +16,10 @@ export const EVENT_TYPES = {
   "webhook_endpoint.created": { module: "account", planned: false },
   "webhook_endpoint.updated": { module: "account", planned: false },
 
+  // Step 3 — properties
+  "listing.created": { module: "properties", planned: false },
+  "listing.updated": { module: "properties", planned: false },
+
   // CAL-14
   "calendar.updated": { module: "calendar", planned: true },
   // RES-19

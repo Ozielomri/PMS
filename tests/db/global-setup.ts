@@ -5,7 +5,9 @@ import pg from "pg";
 import type { TestProject } from "vitest/node";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-const TEST_DB = "pms_test";
+// Override when several checkouts test against one server at once (e.g. parallel worktrees).
+const TEST_DB = process.env.TEST_DB_NAME ?? "pms_test";
+if (!/^[a-z_][a-z0-9_]*$/.test(TEST_DB)) throw new Error("TEST_DB_NAME must be a plain lowercase identifier");
 
 declare module "vitest" {
   export interface ProvidedContext {

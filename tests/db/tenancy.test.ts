@@ -16,6 +16,7 @@ const ACCOUNT_SCOPED_TABLES = [
   "webhook_endpoints",
   "webhook_deliveries",
   "webhook_delivery_attempts",
+  "listings",
 ];
 
 describe("row level security", () => {
@@ -105,6 +106,7 @@ describe("row level security", () => {
       "current_aal",
       "has_permission",
       "is_member",
+      "listing_scope_tags",
       "member_role",
       "shares_account_with",
     ]);
