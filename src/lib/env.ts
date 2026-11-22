@@ -23,13 +23,24 @@ export function siteUrl(): string {
   return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 }
 
-/** Server-only secrets. */
+/**
+ * Server-only secrets. Each one is read (and checked) only when used, so a deployment without,
+ * say, SUPABASE_SECRET_KEY still serves every screen; only the workers that need it fail.
+ */
 export function serverEnv() {
   return {
-    supabaseSecretKey: required("SUPABASE_SECRET_KEY", process.env.SUPABASE_SECRET_KEY),
-    encryptionKey: required("PMS_ENCRYPTION_KEY", process.env.PMS_ENCRYPTION_KEY),
-    cronSecret: required("CRON_SECRET", process.env.CRON_SECRET),
+    get supabaseSecretKey() {
+      return required("SUPABASE_SECRET_KEY", process.env.SUPABASE_SECRET_KEY);
+    },
+    get encryptionKey() {
+      return required("PMS_ENCRYPTION_KEY", process.env.PMS_ENCRYPTION_KEY);
+    },
+    get cronSecret() {
+      return required("CRON_SECRET", process.env.CRON_SECRET);
+    },
     /** Allow http:// and private hosts for webhook URLs. Never set in production. */
-    webhooksAllowPrivateNetworks: process.env.WEBHOOKS_ALLOW_PRIVATE_NETWORKS === "1",
+    get webhooksAllowPrivateNetworks() {
+      return process.env.WEBHOOKS_ALLOW_PRIVATE_NETWORKS === "1";
+    },
   };
 }
