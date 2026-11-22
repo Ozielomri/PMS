@@ -56,10 +56,13 @@ export type UrlCheck = { ok: true; url: URL } | { ok: false; reason: string };
 export interface UrlGuardOptions {
   /** Allow http:// and private/loopback hosts. Only for local development and tests. */
   allowPrivateNetworks?: boolean;
+  /** Subject of the error messages, e.g. "iCal feed URLs". Default "Webhook URLs". */
+  label?: string;
 }
 
-/** Syntax-level check used when an endpoint is saved. */
-export function validateWebhookUrl(raw: string, opts: UrlGuardOptions = {}): UrlCheck {
+/** Syntax-level check used when an endpoint (webhook, iCal feed) is saved. */
+export function validatePublicUrl(raw: string, opts: UrlGuardOptions = {}): UrlCheck {
+  const label = opts.label ?? "Webhook URLs";
   let url: URL;
   try {
     url = new URL(raw.trim());
@@ -74,16 +77,19 @@ export function validateWebhookUrl(raw: string, opts: UrlGuardOptions = {}): Url
     return { ok: true, url };
   }
 
-  if (url.protocol !== "https:") return { ok: false, reason: "Webhook URLs must use https" };
+  if (url.protocol !== "https:") return { ok: false, reason: `${label} must use https` };
   const host = url.hostname.replace(/^\[|\]$/g, "").toLowerCase();
   if (host === "localhost" || BLOCKED_HOST_SUFFIXES.some((s) => host.endsWith(s)) || (!host.includes(".") && !isIP(host))) {
-    return { ok: false, reason: "Webhook URLs must point to a public host" };
+    return { ok: false, reason: `${label} must point to a public host` };
   }
   if (isIP(host) && isPrivateAddress(host)) {
-    return { ok: false, reason: "Webhook URLs must not point to a private network address" };
+    return { ok: false, reason: `${label} must not point to a private network address` };
   }
   return { ok: true, url };
 }
+
+/** The webhook endpoint check (kept for its callers). */
+export const validateWebhookUrl = validatePublicUrl;
 
 export type Lookup = (hostname: string) => Promise<{ address: string }[]>;
 
@@ -94,7 +100,7 @@ export async function assertPublicDestination(
   raw: string,
   opts: UrlGuardOptions & { lookup?: Lookup } = {},
 ): Promise<URL> {
-  const check = validateWebhookUrl(raw, opts);
+  const check = validatePublicUrl(raw, opts);
   if (!check.ok) throw new Error(check.reason);
   if (opts.allowPrivateNetworks) return check.url;
 

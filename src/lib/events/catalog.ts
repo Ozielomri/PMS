@@ -38,6 +38,13 @@ export const EVENT_TYPES = {
   "guest.updated": { module: "reservations", planned: false },
   "quote.created": { module: "reservations", planned: false },
   "quote.updated": { module: "reservations", planned: false },
+  // Step 5 — iCal (CAL-09, CAL-10)
+  "ical_export.created": { module: "calendar", planned: false },
+  "ical_export.updated": { module: "calendar", planned: false },
+  "ical_feed.created": { module: "calendar", planned: false },
+  "ical_feed.updated": { module: "calendar", planned: false },
+  "ical_feed.synced": { module: "calendar", planned: false },
+  "ical_feed.sync_failed": { module: "calendar", planned: false },
   // INB-16
   "message.received": { module: "inbox", planned: true },
   "message.sent": { module: "inbox", planned: true },
