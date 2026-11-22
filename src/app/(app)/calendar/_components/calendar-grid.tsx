@@ -94,11 +94,11 @@ export function CalendarGrid({ from, days, today, rows, bookings, can }: Props) 
     return Math.max(0, Math.min(days - 1, Math.floor((e.clientX - rect.left - NAME_COL) / colW)));
   };
 
-  if (rows.length === 0) return <p className="rounded-lg border border-slate-200 p-6 text-sm text-slate-500 dark:border-slate-800">No listings match.</p>;
+  if (rows.length === 0) return <p className="rounded-2xl border border-slate-200 p-6 text-sm text-slate-500 dark:border-slate-800">No listings match.</p>;
 
   return (
     <div className="relative">
-      <div className="max-h-[72vh] overflow-auto rounded-lg border border-slate-200 bg-white select-none dark:border-slate-800 dark:bg-slate-900" role="grid" aria-label="Multi-calendar" aria-rowcount={rows.length + 1}>
+      <div className="max-h-[72vh] overflow-auto rounded-2xl border border-slate-200 bg-white select-none dark:border-slate-800 dark:bg-slate-900" role="grid" aria-label="Multi-calendar" aria-rowcount={rows.length + 1}>
         <div style={{ width: NAME_COL + colW * days }}>
           {/* Header */}
           <div className="sticky top-0 z-20 flex border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800" role="row">
@@ -114,7 +114,7 @@ export function CalendarGrid({ from, days, today, rows, bookings, can }: Props) 
                   className={cx(
                     "shrink-0 border-r border-slate-200 py-1 text-center text-xs dark:border-slate-700",
                     (dow === 5 || dow === 6) && "bg-slate-100 dark:bg-slate-700/50",
-                    date === today && "bg-sky-100 font-semibold text-sky-900 dark:bg-sky-900 dark:text-sky-100",
+                    date === today && "bg-brand-100 font-semibold text-brand-800 dark:bg-brand-800 dark:text-brand-50",
                   )}
                   style={{ width: colW }}
                 >
@@ -279,11 +279,11 @@ function Cell({
       className={cx(
         "relative flex shrink-0 cursor-cell flex-col items-end justify-end border-r border-slate-100 px-1 pb-0.5 text-[10px] leading-tight dark:border-slate-800",
         past && "bg-slate-50 dark:bg-slate-950/40",
-        today && "bg-sky-50 dark:bg-sky-950/40",
+        today && "bg-brand-50 dark:bg-brand-800/30",
         cell?.block && "bg-[repeating-linear-gradient(135deg,var(--color-slate-200)_0_4px,transparent_4px_9px)] dark:bg-[repeating-linear-gradient(135deg,var(--color-slate-700)_0_4px,transparent_4px_9px)]",
         !cell?.block && cell?.closed && "bg-slate-200/70 dark:bg-slate-800",
         !blocked && cell?.status === "booked" && cell.reason && !parent && "bg-slate-100 dark:bg-slate-800/60",
-        selected && "!bg-sky-200 dark:!bg-sky-800",
+        selected && "!bg-brand-100 dark:!bg-brand-800",
       )}
       style={{ width }}
       title={cell?.block ? `Blocked${cell.blockNote ? `: ${cell.blockNote}` : ""}` : cell?.reason ? cell.reason.replace(/_/g, " ") : undefined}
@@ -385,16 +385,16 @@ function BookingPanel({ booking: b, row, onClose }: { booking: GridBooking; row:
       </dl>
       <div className="mt-6 flex flex-wrap gap-2">
         {b.reservationId ? (
-          <Link href={`/reservations/${b.reservationId}`} className="rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white dark:bg-slate-100 dark:text-slate-900">
+          <Link href={`/reservations/${b.reservationId}`} className="rounded-full bg-brand-600 px-3 py-2 text-sm font-medium text-white">
             Open reservation
           </Link>
         ) : (
-          <Link href="/reservations/quotes" className="rounded-md border border-slate-300 px-3 py-2 text-sm dark:border-slate-700">
+          <Link href="/reservations/quotes" className="rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-700">
             Quotes
           </Link>
         )}
         {b.reservationId && !isChannelSource(b.source ?? "") ? (
-          <Link href={`/reservations/${b.reservationId}/alter`} className="rounded-md border border-slate-300 px-3 py-2 text-sm dark:border-slate-700">
+          <Link href={`/reservations/${b.reservationId}/alter`} className="rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-700">
             Change dates
           </Link>
         ) : null}
@@ -443,7 +443,7 @@ function MoveDialog({ move, rowById, seeMoney, onClose }: { move: NonNullable<Mo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" role="dialog" aria-label="Move booking">
-      <div className="w-full max-w-md rounded-lg bg-white p-5 shadow-xl dark:bg-slate-900">
+      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl dark:bg-slate-900">
         <h2 className="text-lg font-semibold">Move {b.guestName ?? "booking"}?</h2>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
           {fromRow?.name} · {fmtDate.format(d(b.checkIn))} → {fmtDate.format(d(b.checkOut))}

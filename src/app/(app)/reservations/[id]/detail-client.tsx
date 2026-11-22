@@ -26,7 +26,7 @@ export function CancelPanel({ reservationId, policy, canCustom, currency }: { re
     );
   }
   return (
-    <form action={action} className="space-y-3 rounded-md border border-red-200 p-4 dark:border-red-900">
+    <form action={action} className="space-y-3 rounded-xl border border-red-200 p-4 dark:border-red-900">
       <input type="hidden" name="reservationId" value={reservationId} />
       <input type="hidden" name="intent" value="preview" ref={intent} />
       <p className="text-sm text-slate-600 dark:text-slate-300">
@@ -51,7 +51,7 @@ export function CancelPanel({ reservationId, policy, canCustom, currency }: { re
         </div>
       </div>
       {preview ? (
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-md bg-slate-50 p-3 text-sm dark:bg-slate-800">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-1 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800">
           <dt>Refundable</dt>
           <dd className="text-right">{preview.refund_percent} %</dd>
           <dt>Kept (new total)</dt>

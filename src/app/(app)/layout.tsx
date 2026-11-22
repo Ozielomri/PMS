@@ -3,28 +3,20 @@ import { Suspense } from "react";
 
 import { Skeleton } from "@/components/ui";
 import { requireAuthContext } from "@/lib/auth/context";
-import { ROLE_LABELS, type Permission } from "@/lib/auth/permissions";
+import { ROLE_LABELS } from "@/lib/auth/permissions";
 
 import { signOut } from "../(auth)/actions";
 import { AccountSwitcher } from "./account-switcher";
+import { NAV, SETTINGS_NAV } from "./nav";
+import { NavLinks } from "./nav-links";
 
-const NAV: { href: string; label: string; permission: Permission }[] = [
-  { href: "/dashboard", label: "Dashboard", permission: "account.view" },
-  { href: "/calendar", label: "Calendar", permission: "calendar.view" },
-  { href: "/reservations", label: "Reservations", permission: "reservations.view" },
-  { href: "/properties", label: "Properties", permission: "properties.view" },
-  { href: "/settings/members", label: "Team", permission: "account.manage_users" },
-  { href: "/settings/reservations", label: "Booking settings", permission: "reservations.manage" },
-  { href: "/settings/webhooks", label: "Webhooks", permission: "webhooks.manage" },
-  { href: "/settings/audit", label: "Audit log", permission: "audit.view" },
-];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-          <Link href="/dashboard" className="font-semibold tracking-tight">
+      <header>
+        <div className="mx-auto flex max-w-[1360px] flex-wrap items-center gap-x-6 gap-y-3 px-4 py-5 sm:px-10">
+          <Link href="/dashboard" className="font-display text-2xl font-semibold tracking-tight">
             PMS
           </Link>
           <Suspense fallback={<div className="h-5 w-64"><Skeleton lines={1} /></div>}>
@@ -32,7 +24,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Suspense>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-[1360px] px-4 pb-12 pt-4 sm:px-10">{children}</main>
     </div>
   );
 }
@@ -41,14 +33,15 @@ async function TopBar() {
   const ctx = await requireAuthContext();
   return (
     <>
-      <nav aria-label="Main" className="flex flex-1 flex-wrap gap-4 text-sm">
-        {NAV.filter((item) => ctx.can(item.permission)).map((item) => (
-          <Link key={item.href} href={item.href} className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-      <div className="flex items-center gap-3 text-sm">
+      <NavLinks
+        items={[
+          ...NAV.filter((item) => ctx.can(item.permission)).map(({ href, label }) => ({ href, label })),
+          ...SETTINGS_NAV.filter((item) => ctx.can(item.permission))
+            .slice(0, 1)
+            .map(({ href }) => ({ href, label: "Settings", match: "/settings" })),
+        ]}
+      />
+      <div className="ml-auto flex flex-wrap items-center gap-3 text-sm">
         {ctx.can("reservations.view") || ctx.can("properties.view") ? (
           <form action="/search" role="search">
             <label htmlFor="top-search" className="sr-only">
@@ -59,7 +52,7 @@ async function TopBar() {
               name="q"
               type="search"
               placeholder="Search…"
-              className="w-36 rounded-md border border-slate-300 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-900"
+              className="w-44 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
             />
           </form>
         ) : null}

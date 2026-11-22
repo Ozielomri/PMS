@@ -186,7 +186,7 @@ async function Rooms({ listing, canEdit }: TabProps) {
           <p className="text-xs text-slate-500">{totals.length ? totals.map(([b, n]) => `${n} ${BED_TYPE_LABELS[b].toLowerCase()}`).join(", ") : "No beds yet"}</p>
         </div>
         {(rooms ?? []).map((r) => (
-          <div key={r.id} className="rounded-md border border-slate-200 p-3 dark:border-slate-800">
+          <div key={r.id} className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
             <AutosaveForm action={saveRoom.bind(null, r.id, listing.id)} disabled={!canEdit} label={`Room ${r.name}`}>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Name" htmlFor={`r-${r.id}-name`}>
@@ -230,7 +230,7 @@ async function Rooms({ listing, canEdit }: TabProps) {
                 </option>
               ))}
             </Select>
-            <button type="submit" className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-700">
+            <button type="submit" className="rounded-xl border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-700">
               Add room
             </button>
           </form>
@@ -272,7 +272,7 @@ async function Amenities({ listing, canEdit }: TabProps) {
           name="custom"
           rows={3}
           defaultValue={custom}
-          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
         />
       </Field>
     </AutosaveForm>

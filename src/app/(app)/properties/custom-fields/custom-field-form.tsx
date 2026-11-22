@@ -63,7 +63,7 @@ export function CustomFieldForm() {
       </div>
       {type === "dropdown" ? (
         <Field label="Options" htmlFor="cf-options" hint="One per line">
-          <textarea id="cf-options" name="options" rows={3} required className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
+          <textarea id="cf-options" name="options" rows={3} required className="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
         </Field>
       ) : null}
       {state?.error ? <Alert tone="error">{state.error}</Alert> : null}

@@ -61,11 +61,11 @@ async function ListingCalendar({ params, searchParams }: { params: Promise<{ lis
         description={listing.type === "multi_parent" ? "Multi-unit: prices and rules here apply to the multi-unit; bookings shown are on its units." : `Times and dates in ${listing.timezone}.`}
         actions={
           <div className="flex items-center gap-2 text-sm">
-            <Link href={`/calendar/${listing.id}?month=${shiftMonth(month, -1)}`} className="rounded-md border border-slate-300 px-2 py-1.5 dark:border-slate-700" aria-label="Previous month">
+            <Link href={`/calendar/${listing.id}?month=${shiftMonth(month, -1)}`} className="rounded-xl border border-slate-300 px-2 py-1.5 dark:border-slate-700" aria-label="Previous month">
               ←
             </Link>
             <span className="w-36 text-center font-medium">{MONTH_FMT.format(new Date(`${first}T00:00:00Z`))}</span>
-            <Link href={`/calendar/${listing.id}?month=${shiftMonth(month, 1)}`} className="rounded-md border border-slate-300 px-2 py-1.5 dark:border-slate-700" aria-label="Next month">
+            <Link href={`/calendar/${listing.id}?month=${shiftMonth(month, 1)}`} className="rounded-xl border border-slate-300 px-2 py-1.5 dark:border-slate-700" aria-label="Next month">
               →
             </Link>
             <Link href={`/calendar?from=${first}&days=31`} className="ml-2 underline">

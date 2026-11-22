@@ -31,7 +31,7 @@ export function GuestPicker({ onPick, placeholder = "Search guests by name, emai
 
   if (picked) {
     return (
-      <div className="flex items-center justify-between rounded-md border border-slate-300 px-3 py-2 text-sm dark:border-slate-700">
+      <div className="flex items-center justify-between rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-700">
         <span>{guestLabel(picked)}</span>
         <button
           type="button"
@@ -52,7 +52,7 @@ export function GuestPicker({ onPick, placeholder = "Search guests by name, emai
     <div className="relative">
       <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={placeholder} aria-label="Search guests" type="search" />
       {hits.length && q.trim().length >= 2 ? (
-        <ul className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md border border-slate-200 bg-white text-sm shadow-lg dark:border-slate-700 dark:bg-slate-900" role="listbox">
+        <ul className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-slate-200 bg-white text-sm shadow-lg dark:border-slate-700 dark:bg-slate-900" role="listbox">
           {hits.map((g) => (
             <li key={g.id}>
               <button
