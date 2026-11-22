@@ -49,7 +49,7 @@ Browser ──► Next.js (Vercel) ──► Supabase (PostgREST + Auth + Realti
 
 The requirements table uses words (Full / Edit / View / …). They are mapped to concrete permission keys in `src/lib/auth/permissions.ts` and seeded into `role_permissions`. Interpretation calls to review:
 
-* **Full vs Edit:** *Full* adds create / archive / delete-like actions and module settings; *Edit* changes existing records. So a Manager edits listings but only an Admin creates or archives them.
+* **Full vs Edit:** *Full* adds create / archive / delete-like actions and module settings; *Edit* changes existing records. So a Manager edits listings but only an Admin creates or archives them (`properties.manage`). **Confirmed by Omri, 22 Nov 2026.**
 * **Front office calendar "Block only":** `calendar.view` + `calendar.block`, no price/rule edits.
 * **Front office reservations "Create, edit, no cancel":** includes viewing money.
 * **Supervisor tasks "Full on own team":** gets the task permissions now; the *own team* restriction arrives with groups in step 8.
