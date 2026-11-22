@@ -40,6 +40,15 @@ const ACCOUNT_SCOPED_TABLES = [
   "reservation_files",
   "reservation_source_settings",
   "reservation_saved_views",
+  // Step 6 — inbox
+  "inbox_settings",
+  "conversations",
+  "messages",
+  "message_deliveries",
+  "inbound_emails",
+  "saved_replies",
+  "conversation_reads",
+  "agent_proposals",
 ];
 
 describe("row level security", () => {
@@ -154,6 +163,12 @@ describe("row level security", () => {
       "select public.apply_pricing_tool_updates('x', '[]'::jsonb)",
       "select public.extend_calendar_horizon()",
       "select public.expire_calendar_holds()",
+      // Step 6 — inbox workers and the agent
+      "select public.ingest_inbound_email('test', '{}'::jsonb)",
+      "select * from public.claim_outbound_messages()",
+      "select public.record_outbound_result(gen_random_uuid(), 'sent')",
+      "select public.record_delivery_event('postmark', 'x', 'delivered')",
+      "select public.agent_propose_reply(gen_random_uuid(), 'x', gen_random_uuid())",
     ]) {
       await expect(asUser(admin, (db) => db.query(sql))).rejects.toThrow(/permission denied/);
     }

@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { Alert, Button, Field, Input, Select } from "@/components/ui";
-import { ROLES, ROLE_LABELS, type Role } from "@/lib/auth/permissions";
+import { HUMAN_ROLES, ROLE_LABELS, type Role } from "@/lib/auth/permissions";
 
 import { inviteMember, setListingScope, updateMember } from "./actions";
 
@@ -17,7 +17,7 @@ export function InviteForm() {
         </Field>
         <Field label="Role" htmlFor="invite-role">
           <Select id="invite-role" name="role" defaultValue="manager">
-            {ROLES.map((r) => (
+            {HUMAN_ROLES.map((r) => (
               <option key={r} value={r}>
                 {ROLE_LABELS[r]}
               </option>
@@ -61,7 +61,7 @@ export function MemberControls({ membership, isSelf }: { membership: MembershipV
           Role
         </label>
         <Select id={`role-${membership.id}`} name="role" defaultValue={membership.role} className="w-auto">
-          {ROLES.map((r) => (
+          {HUMAN_ROLES.map((r) => (
             <option key={r} value={r}>
               {ROLE_LABELS[r]}
             </option>

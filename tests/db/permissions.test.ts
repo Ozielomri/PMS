@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { ALL_PERMISSIONS, ROLES, ROLE_PERMISSIONS, can, type Role } from "@/lib/auth/permissions";
+import { ALL_PERMISSIONS, HUMAN_ROLES, ROLES, ROLE_PERMISSIONS, can, type Role } from "@/lib/auth/permissions";
 
 import { addMember, asUser, createAccount, query } from "./helpers";
 
@@ -32,7 +32,7 @@ describe("role_permissions matrix", () => {
 describe("private.has_permission", () => {
   it("matches can() for every role and permission (aal2)", async () => {
     const { accountId } = await createAccount();
-    for (const role of ROLES.filter((r) => r !== "admin")) {
+    for (const role of HUMAN_ROLES.filter((r) => r !== "admin")) {
       const member = await addMember(accountId, role);
       const results = await asUser(member, async (db) => {
         const { rows } = await db.query<{ permission: string; ok: boolean }>(

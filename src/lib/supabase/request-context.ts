@@ -8,7 +8,7 @@ export function clientIpFromHeaders(h: Pick<Headers, "get">): string | null {
   return h.get("x-real-ip")?.trim() || null;
 }
 
-export type ActorType = "automation" | "channel" | "api" | "system";
+export type ActorType = "automation" | "channel" | "api" | "system" | "agent";
 
 /** Headers that tell the database who a service-role request acts for (see private.current_actor). */
 export function actorHeaders(actor: { type: ActorType; id?: string | null }): Record<string, string> {

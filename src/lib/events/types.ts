@@ -10,7 +10,7 @@ export const domainEventSchema = z.object({
   transaction_id: z.string(),
   entity: z.object({ type: z.string(), id: z.string() }),
   actor: z.object({
-    type: z.enum(["user", "automation", "channel", "api", "system"]),
+    type: z.enum(["user", "automation", "channel", "api", "system", "agent"]),
     id: z.string().nullable(),
   }),
   data: z.record(z.string(), z.unknown()),

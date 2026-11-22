@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { authorizeAction } from "@/lib/auth/context";
-import { ROLES } from "@/lib/auth/permissions";
+import { HUMAN_ROLES } from "@/lib/auth/permissions";
 import { siteUrl } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,7 +23,7 @@ export async function inviteMember(_prev: ActionResult, formData: FormData): Pro
   const auth = await authorizeAction("account.manage_users");
   if (!auth.ok) return { error: auth.error };
   const parsed = z
-    .object({ email: z.string().trim().toLowerCase().email("Enter a valid email address"), role: z.enum(ROLES) })
+    .object({ email: z.string().trim().toLowerCase().email("Enter a valid email address"), role: z.enum(HUMAN_ROLES) })
     .safeParse({ email: formData.get("email"), role: formData.get("role") });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
 
@@ -59,7 +59,7 @@ export async function updateMember(_prev: ActionResult, formData: FormData): Pro
   const parsed = z
     .object({
       membershipId: z.guid(),
-      role: z.enum(ROLES).optional(),
+      role: z.enum(HUMAN_ROLES).optional(),
       status: z.enum(["active", "suspended", "removed"]).optional(),
     })
     .safeParse({
