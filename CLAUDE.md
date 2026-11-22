@@ -11,7 +11,8 @@ Full requirements: `docs/requirements.md` (requirement IDs PRP, CAL, RES, INB, A
 - Channel: Booking.com only, via the direct Connectivity API (test properties first)
 - Multi-units: in MVP (P0)
 - Pricing: base nightly price + date-range overrides + weekly/monthly discounts; one rate per listing; no rate plans. Cleaning, extra-guest and pet fees stay. No tourist/occupancy tax.
-- No payments, no AI reply drafts, no business model in this phase
+- No payments, no business model in this phase
+- AI agent at the center (decided 22 Nov 2026, replaces "no AI reply drafts"): the agent is an account member with its own role, acting only through the existing functions, with per-action trust levels (auto / draft / never) and an approval queue. Plan: `docs/plans/ai-agent.md`
 - Staff app: responsive web / PWA only
 - UI: English only; currency USD; units sq ft
 - Privacy: US (CCPA/CPRA); Supabase in a US region
@@ -37,8 +38,8 @@ Full requirements: `docs/requirements.md` (requirement IDs PRP, CAL, RES, INB, A
 3. Properties incl. multi-units (PRP-*)
 4. Reservations + multi-calendar grid (RES-*, CAL screens)
 5. iCal import/export (CAL-09, CAL-10)
-6. Inbox, email first (INB-*)
-7. Automations scheduler (AUT-*)
+6. Inbox, email first (INB-*), AI-first: drafted and auto-sent replies (see `docs/plans/ai-agent.md`)
+7. Automations scheduler (AUT-*), incl. an "ask the agent" action
 8. Tasks + staff PWA (TSK-*)
 9. Booking.com integration (rates/availability push, reservation pull, messages)
 
