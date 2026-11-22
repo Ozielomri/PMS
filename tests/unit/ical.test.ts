@@ -52,7 +52,7 @@ describe("unfoldLines / parseContentLine", () => {
       value: "20261201T150000",
     });
     expect(parseContentLine('X-X;P="a:b;c":v:w')).toEqual({ name: "X-X", params: { P: "a:b;c" }, value: "v:w" });
-    expect(parseContentLine("uid:abc").name).toBe("UID");
+    expect(parseContentLine("uid:abc")?.name).toBe("UID");
     expect(parseContentLine("no colon here")).toBeNull();
   });
 });

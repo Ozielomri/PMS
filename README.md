@@ -47,6 +47,7 @@ Idempotent endpoints, protected by `Authorization: Bearer $CRON_SECRET`; overlap
 - `POST /api/internal/webhooks/dispatch` sends due webhook deliveries
 - `POST /api/internal/events/process` runs internal event consumers (none registered until automations, step 7)
 - `POST /api/internal/reservations/expire` expires requests past their approval deadline, closes past inquiries and expires quotes (the reservation list, dashboard and quotes page also sweep their own account on load)
+- `POST /api/internal/ical/sync` imports due iCal feeds (CAL-10; schedule every 15 minutes)
 
 **Vercel Schedules** call both every minute once the project is on the **Pro plan** (Hobby allows at most every 15 minutes). They are currently **off**: see [`TODO.md`](TODO.md). Set `CRON_SECRET` in the project's environment variables; Vercel sends it as the bearer token. Schedules run against the production deployment only; locally, call an endpoint by hand:
 
@@ -70,6 +71,13 @@ Plan: [`docs/plans/step-4-reservations.md`](docs/plans/step-4-reservations.md). 
 - `/reservations`: quick tabs, filters, saved views, CSV export. Detail page with status actions, alterations (preview → confirm), cancellation with refund preview, unit reassignment, extras/adjustments, payments, notes, private files (bucket `reservation-files`) and the activity log.
 - `/reservations/quotes`: quotes with up to 10 options; the guest opens `/q/<token>` (public) and books one option at the quoted price.
 - `/search` and the top-bar box search codes, guests, emails, phones and listings. `/settings/reservations` sets the approval window per source.
+
+## iCal (step 5)
+
+Plan: [`docs/plans/step-5-ical.md`](docs/plans/step-5-ical.md); migration `20261124001000_ical.sql`; code in `src/lib/ical/`. Settings in the listing editor's **iCal** tab (`calendar.manage`).
+
+- **Export (CAL-09):** `GET /ical/<token>.ics`, public and availability only ("Not available" all-day events, no guest data). Only the token's sha256 is used for lookups; the token is also stored encrypted with `PMS_ENCRYPTION_KEY` so the editor can show the URL again. Rotate or revoke from the tab.
+- **Import (CAL-10):** feed URLs are stored encrypted; the worker (`/api/internal/ical/sync`) or **Sync now** fetches them (https and public hosts only, 15 s, 5 MB, conditional GET), and the database diffs the events into `ical` holds. Overlaps with bookings are shown on the feed, never resolved by deleting anything. Locally, `WEBHOOKS_ALLOW_PRIVATE_NETWORKS=1` also allows http and private hosts for feeds.
 
 ## Layout
 

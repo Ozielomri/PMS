@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AutosaveForm } from "../_components/autosave";
 import { addRoom, deleteRoom, saveAmenities, saveCustomValues, saveDescription, saveListingTab, saveRoom } from "./actions";
 import { CountedTextarea, PhotoManager, SecretField, TimezoneForm } from "./editor-client";
+import { IcalTab } from "./ical-tab";
 
 interface TabProps {
   tab: EditorTab;
@@ -65,6 +66,8 @@ export async function TabContent(props: TabProps) {
       return <CustomFields {...props} />;
     case "channels":
       return <Channels {...props} />;
+    case "ical":
+      return <IcalTab listing={props.listing} />;
     case "log":
       return <Log {...props} />;
   }

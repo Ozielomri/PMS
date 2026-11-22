@@ -15,7 +15,8 @@ The demo deployment runs on the Vercel **Hobby** plan, which allows a schedule a
 
 - webhook deliveries stay queued (nothing is sent);
 - the calendar is not extended past its initial 730+ days, and expired holds are only ignored, not swept;
-- requests past their approval deadline and expired quotes are only swept when someone opens the reservation list, the dashboard or the quotes page.
+- requests past their approval deadline and expired quotes are only swept when someone opens the reservation list, the dashboard or the quotes page;
+- iCal feeds (CAL-10) are only imported when someone presses **Sync now** (or adds the feed) in the listing's iCal tab. The `ical-sync` schedule (every 15 minutes) is allowed on Hobby, so it could be enabled on its own before the move to Pro.
 
 Steps:
 
@@ -40,6 +41,10 @@ Steps:
   "reservation-expiry": {
     "schedule": "*/5 * * * *",
     "path": "/api/internal/reservations/expire"
+  },
+  "ical-sync": {
+    "schedule": "*/15 * * * *",
+    "path": "/api/internal/ical/sync"
   }
 }
 ```

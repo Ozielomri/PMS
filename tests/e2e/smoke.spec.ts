@@ -45,6 +45,27 @@ test.describe("public pages and the auth gate", () => {
     }
   });
 
+  test("the iCal sync worker rejects requests without the cron secret", async ({ request }) => {
+    expect((await request.post("/api/internal/ical/sync")).status()).toBe(401);
+    expect((await request.get("/api/internal/ical/sync", { headers: { authorization: "Bearer wrong" } })).status()).toBe(401);
+  });
+
+  test("iCal export URLs are public routes that never redirect to sign-in", async ({ request }) => {
+    const bad = await request.get("/ical/not-a-token.ics", { maxRedirects: 0 });
+    expect(bad.status()).toBe(404);
+    expect(bad.headers()["x-robots-tag"]).toContain("noindex");
+    // A well-formed but unknown token reaches the database lookup (unreachable in this smoke
+    // setup, so 503); either way it is answered by the route, not by the sign-in gate.
+    const unknown = await request.get(`/ical/pmsical_${"a".repeat(43)}.ics`, { maxRedirects: 0 });
+    expect([404, 503]).toContain(unknown.status());
+    expect(unknown.headers()["cache-control"]).toContain("private");
+  });
+
+  test("the listing iCal tab needs sign-in", async ({ page }) => {
+    await page.goto("/properties/00000000-0000-4000-8000-000000000000?tab=ical");
+    await expect(page).toHaveURL(/\/login\?next=/);
+  });
+
   test("bad email links land on sign-in with an error", async ({ page }) => {
     await page.goto("/auth/confirm?token_hash=bogus&type=magiclink&next=/dashboard");
     await expect(page).toHaveURL(/\/login\?error=link/);
