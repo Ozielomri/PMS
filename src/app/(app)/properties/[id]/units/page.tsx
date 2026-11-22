@@ -55,6 +55,11 @@ async function Units({ params }: { params: Promise<{ id: string }> }) {
   ]);
   const active = (subs ?? []).filter((s) => s.status !== "archived");
   const archived = (subs ?? []).filter((s) => s.status === "archived");
+  // Next reservation / owner-stay arrival per sub-unit (Calendar: public.next_arrivals).
+  const { data: arrivals } = active.length
+    ? await supabase.rpc("next_arrivals", { p_listing_ids: active.map((s) => s.id) })
+    : { data: [] };
+  const nextArrival = new Map(((arrivals ?? []) as { listing_id: string; check_in: string }[]).map((a) => [a.listing_id, a.check_in]));
   const canEdit = ctx.can("properties.edit");
   const canManage = ctx.can("properties.manage");
   const ready = active.filter((s) => s.cleaning_status === "clean" || s.cleaning_status === "inspected").length;
@@ -106,7 +111,7 @@ async function Units({ params }: { params: Promise<{ id: string }> }) {
             <SubUnitRow
               key={s.id}
               parentId={id}
-              unit={{ id: s.id, name: s.internal_name, status: s.status, cleaningStatus: s.cleaning_status, cleaningUpdatedAt: s.cleaning_status_updated_at }}
+              unit={{ id: s.id, name: s.internal_name, status: s.status, cleaningStatus: s.cleaning_status, cleaningUpdatedAt: s.cleaning_status_updated_at, nextArrival: nextArrival.get(s.id) ?? null }}
               timezone={parent.timezone}
               otherParents={parents ?? []}
               canEdit={canEdit}
@@ -128,7 +133,7 @@ async function Units({ params }: { params: Promise<{ id: string }> }) {
               <SubUnitRow
                 key={s.id}
                 parentId={id}
-                unit={{ id: s.id, name: s.internal_name, status: s.status, cleaningStatus: s.cleaning_status, cleaningUpdatedAt: s.cleaning_status_updated_at }}
+                unit={{ id: s.id, name: s.internal_name, status: s.status, cleaningStatus: s.cleaning_status, cleaningUpdatedAt: s.cleaning_status_updated_at, nextArrival: nextArrival.get(s.id) ?? null }}
                 timezone={parent.timezone}
                 otherParents={[]}
                 canEdit={false}

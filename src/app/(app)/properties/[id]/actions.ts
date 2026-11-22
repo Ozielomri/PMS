@@ -13,7 +13,24 @@ import { formDataToObject, parseListingPatch, type ListingTabSchema } from "@/li
 import { decryptCustomSecret, encryptCustomSecret } from "@/lib/properties/secrets";
 import { createClient } from "@/lib/supabase/server";
 
-export type SaveResult = { ok?: boolean; error?: string; savedAt?: string; message?: string; needsConfirmation?: boolean } | null;
+export type AffectedStay = { holdId: string; sourceType: string; checkIn: string; checkOut: string };
+export type SaveResult = {
+  ok?: boolean;
+  error?: string;
+  savedAt?: string;
+  message?: string;
+  needsConfirmation?: boolean;
+  /** Timezone change: future reservations / owner stays whose check-in and check-out moments shift. */
+  affected?: AffectedStay[];
+} | null;
+
+/** Future reservation and owner-stay holds of a listing (Calendar: public.listing_future_holds). */
+async function affectedStays(supabase: Awaited<ReturnType<typeof createClient>>, listingId: string): Promise<AffectedStay[]> {
+  const { data } = await supabase.rpc("listing_future_holds", { p_listing_id: listingId });
+  return ((data ?? []) as { hold_id: string; source_type: string; check_in: string; check_out: string }[])
+    .filter((h) => h.source_type === "reservation" || h.source_type === "owner_stay")
+    .map((h) => ({ holdId: h.hold_id, sourceType: h.source_type, checkIn: h.check_in, checkOut: h.check_out }));
+}
 
 const uuid = z.guid();
 const saved = (): SaveResult => ({ ok: true, savedAt: new Date().toISOString() });
@@ -52,6 +69,7 @@ export async function changeTimezone(listingId: string, _prev: SaveResult, formD
     if (hasBookings) {
       return {
         needsConfirmation: true,
+        affected: await affectedStays(supabase, listingId),
         message:
           "This listing has future bookings. Their dates stay the same local dates, but check-in and check-out moments shift to the new timezone. Review the affected bookings before you confirm.",
       };
@@ -59,7 +77,9 @@ export async function changeTimezone(listingId: string, _prev: SaveResult, formD
   }
   const { error } = await supabase.rpc("change_listing_timezone", { p_listing_id: listingId, p_timezone: tz.data, p_confirm: confirm });
   if (error) {
-    if (error.message.startsWith("timezone_change_requires_confirmation")) return { needsConfirmation: true, message: propertyErrorMessage(error.message) };
+    if (error.message.startsWith("timezone_change_requires_confirmation")) {
+      return { needsConfirmation: true, affected: await affectedStays(supabase, listingId), message: propertyErrorMessage(error.message) };
+    }
     return { error: propertyErrorMessage(error.message) };
   }
   revalidatePath(path(listingId));

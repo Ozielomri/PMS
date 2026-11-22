@@ -73,7 +73,15 @@ export function TimezoneForm({ listingId, current, disabled }: { listingId: stri
       {state?.needsConfirmation ? (
         <Alert tone="error">
           <p>{state.message}</p>
-          <p className="mt-1 text-xs">The list of affected bookings appears here once reservations are available (step 4).</p>
+          {state.affected?.length ? (
+            <ul className="mt-2 list-disc pl-5 text-xs">
+              {state.affected.map((a) => (
+                <li key={a.holdId}>
+                  {a.sourceType === "owner_stay" ? "Owner stay" : "Reservation"}: {a.checkIn} → {a.checkOut}
+                </li>
+              ))}
+            </ul>
+          ) : null}
           <input type="hidden" name="confirm" value="1" />
           <Button type="submit" variant="danger" className="mt-2" disabled={pending}>
             Confirm timezone change

@@ -8,6 +8,10 @@
     "event-consumers": {
       "schedule": "* * * * *",
       "path": "/api/internal/events/process"
+    },
+    "calendar-maintenance": {
+      "schedule": "17 * * * *",
+      "path": "/api/calendar/machine/maintenance"
     }
   }
 }

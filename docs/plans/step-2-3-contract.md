@@ -45,3 +45,10 @@ Both sides may append to these; the merge resolves conflicts:
 * `src/app/(app)/layout.tsx` (NAV entries)
 * `tests/db/tenancy.test.ts` (`ACCOUNT_SCOPED_TABLES`; the private-function allowlist)
 * `src/lib/auth/permissions.ts` — do **not** change the matrix.
+
+## Merge notes (22 Nov 2026)
+
+* Both branches merged. Calendar test fixtures (`tests/db/calendar-fixtures.ts`) now create complete listings with a photo, so they pass the Properties activation rule.
+* Calendar provides `listing_future_holds()` and `next_arrivals()`; the Properties timezone dialog lists affected reservations / owner stays and the multi-unit view shows each sub-unit's next arrival.
+* `place_hold` refuses archived listings, and reservation / quote / owner-stay holds on drafts.
+* After the merge: 306 Vitest tests (unit + db), lint, typecheck, build and 18 Playwright smoke tests pass.

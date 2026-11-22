@@ -28,7 +28,7 @@ export const EVENT_TYPES = {
   "listing_channel_link.updated": { module: "properties", planned: false },
 
   // CAL-14
-  "calendar.updated": { module: "calendar", planned: true },
+  "calendar.updated": { module: "calendar", planned: false },
   // RES-19
   "reservation.created": { module: "reservations", planned: true },
   "reservation.updated": { module: "reservations", planned: true },

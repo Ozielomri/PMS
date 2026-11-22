@@ -44,7 +44,7 @@ export function SubUnitRow({
   canManage,
 }: {
   parentId: string;
-  unit: { id: string; name: string; status: ListingStatus; cleaningStatus: CleaningStatus; cleaningUpdatedAt: string | null };
+  unit: { id: string; name: string; status: ListingStatus; cleaningStatus: CleaningStatus; cleaningUpdatedAt: string | null; nextArrival: string | null };
   timezone: string;
   otherParents: { id: string; internal_name: string }[];
   canEdit: boolean;
@@ -62,7 +62,7 @@ export function SubUnitRow({
           {unit.name}
         </Link>
         <p className="text-xs text-slate-500">
-          Next arrival: — <span className="sr-only">(available once reservations are built)</span>
+          Next arrival: {unit.nextArrival ?? "none scheduled"}
         </p>
       </div>
       <Badge tone={LISTING_STATUS_TONE[unit.status]}>{LISTING_STATUS_LABELS[unit.status]}</Badge>
