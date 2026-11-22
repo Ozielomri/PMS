@@ -138,3 +138,18 @@ create policy listings_update on public.listings
 
 grant execute on function private.listing_scope_tags(public.listings) to authenticated;
 revoke execute on all functions in schema private from public;
+
+-- Contract stub, replaced by the Calendar migrations (step 2): does the listing (or, for a
+-- multi_parent, any of its sub-units) have reservation or owner-stay holds on future nights?
+create or replace function public.listing_has_future_bookings(p_listing_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select false
+$$;
+
+revoke execute on function public.listing_has_future_bookings(uuid) from public, anon;
+grant execute on function public.listing_has_future_bookings(uuid) to authenticated, service_role;
