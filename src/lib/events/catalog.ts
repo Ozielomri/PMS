@@ -19,6 +19,13 @@ export const EVENT_TYPES = {
   // Step 3 — properties
   "listing.created": { module: "properties", planned: false },
   "listing.updated": { module: "properties", planned: false },
+  "listing.status_changed": { module: "properties", planned: false },
+  "listing.cleaning_status_changed": { module: "properties", planned: false },
+  "listing.content_updated": { module: "properties", planned: false },
+  "custom_field.created": { module: "properties", planned: false },
+  "custom_field.updated": { module: "properties", planned: false },
+  "listing_channel_link.created": { module: "properties", planned: false },
+  "listing_channel_link.updated": { module: "properties", planned: false },
 
   // CAL-14
   "calendar.updated": { module: "calendar", planned: true },

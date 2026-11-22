@@ -17,6 +17,14 @@ const ACCOUNT_SCOPED_TABLES = [
   "webhook_deliveries",
   "webhook_delivery_attempts",
   "listings",
+  // Step 3 — properties
+  "listing_rooms",
+  "listing_amenities",
+  "listing_descriptions",
+  "listing_photos",
+  "listing_channel_links",
+  "custom_fields",
+  "listing_custom_values",
 ];
 
 describe("row level security", () => {
@@ -55,7 +63,7 @@ describe("row level security", () => {
 
   it("gives anonymous requests nothing", async () => {
     await createAccount();
-    for (const table of [...ACCOUNT_SCOPED_TABLES, "profiles", "role_permissions", "event_queue", "event_consumers"]) {
+    for (const table of [...ACCOUNT_SCOPED_TABLES, "profiles", "role_permissions", "event_queue", "event_consumers", "amenities"]) {
       const result = await as({ role: "anon" }, (db) => db.query(`select count(*)::int as n from public.${table}`)).then(
         (r) => r.rows[0].n as number,
         (e: Error) => e.message,
@@ -103,6 +111,7 @@ describe("row level security", () => {
     );
     expect(rows.map((r) => r.fn)).toEqual([
       "can_access_listing",
+      "can_edit_listing_photo_path", // storage.objects policies (step 3)
       "current_aal",
       "has_permission",
       "is_member",
