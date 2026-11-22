@@ -42,19 +42,15 @@ The DB suite runs on plain Postgres: `tests/db/supabase-shim.sql` adds the few S
 
 ## Background workers
 
-Two idempotent endpoints, protected by `Authorization: Bearer $CRON_SECRET`; call each every minute (overlapping runs are safe):
+Two idempotent endpoints, protected by `Authorization: Bearer $CRON_SECRET`; overlapping runs are safe:
 
-- `POST /api/internal/webhooks/dispatch` — sends due webhook deliveries
-- `POST /api/internal/events/process` — runs internal event consumers (none registered until automations, step 7)
+- `POST /api/internal/webhooks/dispatch` sends due webhook deliveries
+- `POST /api/internal/events/process` runs internal event consumers (none registered until automations, step 7)
 
-Options: Vercel Cron (per-minute schedules need a Pro plan), or Supabase `pg_cron` + `pg_net`:
+**Vercel Schedules** call both every minute (`vercel.json`). This needs the **Pro plan**: Hobby limits schedules to once every 15 minutes. Set `CRON_SECRET` in the project's environment variables; Vercel sends it as the bearer token. Schedules run against the production deployment only; locally, call an endpoint by hand:
 
-```sql
-select cron.schedule('pms-webhooks', '* * * * *', $$
-  select net.http_post(
-    url := 'https://<your-app>/api/internal/webhooks/dispatch',
-    headers := jsonb_build_object('Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret'))
-  ) $$);
+```bash
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/internal/webhooks/dispatch
 ```
 
 ## Layout

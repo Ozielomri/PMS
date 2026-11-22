@@ -93,5 +93,5 @@ Found and fixed during testing: functions in `private` were executable by `authe
 * Invitation emails: the admin copies the invite link for now; email delivery comes with notifications (X-06).
 * Supervisor "own team" scoping and cleaner "own tasks" row filtering: with Tasks (step 8).
 * Listing-scope RLS on listing tables: call `private.can_access_listing()` in step 3.
-* Worker scheduling: choose Vercel Cron (Pro) or `pg_cron` + `pg_net` when deploying.
+* Worker scheduling: **decided 22 Nov 2026: Vercel Schedules** (`vercel.json`, every minute, requires the Pro plan). The audit-log purge still runs in the database via `pg_cron`, where available.
 * DNS-rebinding window in the webhook SSRF guard (lookup vs. fetch); acceptable for the trial.

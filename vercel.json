@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "schedules": {
+    "webhook-dispatch": {
+      "schedule": "* * * * *",
+      "path": "/api/internal/webhooks/dispatch"
+    },
+    "event-consumers": {
+      "schedule": "* * * * *",
+      "path": "/api/internal/events/process"
+    }
+  }
+}
