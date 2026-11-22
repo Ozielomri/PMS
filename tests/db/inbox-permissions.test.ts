@@ -78,6 +78,19 @@ describe("roles", () => {
     expect((await eventsFor(id)).map((e) => e.type)).toEqual(["message.note_added"]);
   });
 
+  it("gives the list view what the tabs filter on (INB-03)", async () => {
+    const s = await inboxSetup();
+    const soon = await book(s.manager, s.listing, day(1), day(3), { guest: { first_name: "Soon", email: "soon@example.test" } });
+    const later = await book(s.manager, s.listing, day(20), day(22), { status: "reserved", guest: { first_name: "Later", email: "later@example.test" } });
+    const ids = await Promise.all([soon, later].map((r) => rpc<string>(s.manager, "select public.inbox_open_conversation($1) as r", [r])));
+    const rows = await asUser(s.manager, async (db) =>
+      (await db.query("select id, arriving_soon, reservation_status, guest_name, listing_name from public.inbox_conversation_list where account_id = $1", [s.accountId])).rows,
+    );
+    const byId = Object.fromEntries(rows.map((r) => [r.id, r]));
+    expect(byId[ids[0]]).toMatchObject({ arriving_soon: true, reservation_status: "confirmed", guest_name: "Soon" });
+    expect(byId[ids[1]]).toMatchObject({ arriving_soon: false, reservation_status: "reserved", guest_name: "Later" });
+  });
+
   it("tracks unread per user", async () => {
     const s = await setupWithConversation();
     await ingest(emailPayload({ account_token: s.token, from_email: "ada@example.test" }));

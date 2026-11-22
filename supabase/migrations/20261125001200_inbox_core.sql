@@ -55,7 +55,8 @@ create trigger inbox_settings_touch before update on public.inbox_settings
   for each row execute function private.touch_updated_at();
 create trigger audit_inbox_settings after insert or update or delete on public.inbox_settings
   for each row execute function private.audit_row_change();
-create trigger events_inbox_settings after insert or update on public.inbox_settings
+-- Settings are created with the account (account.created covers that); changes emit events.
+create trigger events_inbox_settings after update on public.inbox_settings
   for each row execute function private.emit_row_event('inbox_settings');
 
 create or replace function private.create_inbox_settings()

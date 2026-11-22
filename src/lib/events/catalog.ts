@@ -50,7 +50,6 @@ export const EVENT_TYPES = {
   "conversation.updated": { module: "inbox", planned: false },
   "saved_reply.created": { module: "inbox", planned: false },
   "saved_reply.updated": { module: "inbox", planned: false },
-  "inbox_settings.created": { module: "inbox", planned: false },
   "inbox_settings.updated": { module: "inbox", planned: false },
   // AI agent (docs/plans/ai-agent.md): the approval queue
   "agent_proposal.created": { module: "agent", planned: false },

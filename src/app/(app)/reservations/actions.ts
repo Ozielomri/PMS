@@ -62,6 +62,8 @@ async function run(
   if (error) return { error: reservationErrorMessage(error.message) };
   revalidatePath("/reservations");
   revalidatePath("/calendar");
+  // The inbox context panel shows the reservation and its approve / decline actions (INB-07).
+  revalidatePath("/inbox");
   if (opts.reservationId) revalidatePath(`/reservations/${opts.reservationId}`);
   return { ok: true, message: opts.message, data };
 }

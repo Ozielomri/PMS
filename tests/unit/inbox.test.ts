@@ -5,6 +5,7 @@ import { DELIVERY_STATUSES, canDeliveryTransition, deliveryLabel, isDeliveryFina
 import { buildOutboundEmail, replyAddress } from "@/lib/inbox/email/compose";
 import { extractTokens, normalizeSubject, parseAddress, parseAddressList, stripQuotedReply } from "@/lib/inbox/email/parse";
 import { parseInboxFilters, inboxFiltersToQuery } from "@/lib/inbox/filters";
+import { formatDuration, initials, timeSince } from "@/lib/inbox/format";
 import { inboxErrorMessage } from "@/lib/inbox/errors";
 import { pickVariant } from "@/lib/inbox/saved-replies";
 import { buildMessageVariables, findVariables, previewTemplate, resolveTemplate } from "@/lib/inbox/variables";
@@ -210,6 +211,23 @@ describe("inbox filters (INB-03)", () => {
     expect(parseInboxFilters(Object.fromEntries(new URLSearchParams(inboxFiltersToQuery(f))))).toEqual(f);
     expect(parseInboxFilters({}).tab).toBe("unanswered");
     expect(inboxFiltersToQuery(parseInboxFilters({}))).toBe("");
+  });
+});
+
+describe("formatting", () => {
+  it("shows time since the last guest message and response times", () => {
+    const now = new Date("2026-11-23T12:00:00Z");
+    expect(timeSince("2026-11-23T11:59:15Z", now)).toBe("45s");
+    expect(timeSince("2026-11-23T11:48:00Z", now)).toBe("12m");
+    expect(timeSince("2026-11-23T09:00:00Z", now)).toBe("3h");
+    expect(timeSince("2026-11-21T12:00:00Z", now)).toBe("2d");
+    expect(timeSince(null, now)).toBe("");
+    expect(formatDuration(45)).toBe("45 s");
+    expect(formatDuration(754)).toBe("13 min");
+    expect(formatDuration(5400)).toBe("1 h 30 min");
+    expect(formatDuration(2 * 86_400)).toBe("2 d 0 h");
+    expect(initials("Ada Lovelace")).toBe("AL");
+    expect(initials("bob@example.com")).toBe("BE");
   });
 });
 

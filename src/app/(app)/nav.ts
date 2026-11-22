@@ -3,6 +3,7 @@ import type { Permission } from "@/lib/auth/permissions";
 /** Main navigation (pills) and the settings pages grouped under one "Settings" pill. */
 export const NAV: { href: string; label: string; permission: Permission }[] = [
   { href: "/dashboard", label: "Today", permission: "account.view" },
+  { href: "/inbox", label: "Inbox", permission: "inbox.view" },
   { href: "/calendar", label: "Calendar", permission: "calendar.view" },
   { href: "/reservations", label: "Reservations", permission: "reservations.view" },
   { href: "/properties", label: "Properties", permission: "properties.view" },
