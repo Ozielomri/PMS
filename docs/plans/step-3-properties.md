@@ -79,3 +79,23 @@ All in the database (triggers on `listings` + deferred constraint triggers), so 
 ## Events (added to the catalog)
 
 `listing.status_changed`, `listing.cleaning_status_changed` (both besides `listing.updated`), `listing.content_updated` (rooms, amenities, descriptions, photos, custom values; payload names the section, never secret values), `custom_field.created/updated`, `listing_channel_link.created/updated`.
+
+## Verification (22 Nov 2026)
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck`, `npm run lint`, `next build` | pass |
+| `npx vitest run --project unit` | 148 pass (14 new in `tests/unit/properties.test.ts`) |
+| `TEST_DB_NAME=pms_test_properties npx vitest run --project db` | 98 pass (32 new in `tests/db/properties-*.test.ts`) |
+| Playwright smoke (`E2E_PORT=3102 …`) | 18 pass, 1 skipped (full flow needs Supabase); 5 new in `tests/e2e/properties.spec.ts` |
+| UI against a live Supabase stack (upload, autosave, wizard timing) | **not run**: no Docker/Supabase in the build sandbox. Run before step 4. |
+
+Future bookings are simulated in the DB tests by replacing `listing_has_future_bookings()` inside a rolled-back transaction (`withFutureBookings()` in `tests/db/properties-fixtures.ts`).
+
+## Open items
+
+* **Calendar (step 2):** tests or seed data that insert `status = 'active'` listings must now satisfy the activation rules (use `bookableListing()` / `multiUnit()` from `tests/db/properties-fixtures.ts`, or insert as draft). Calendar should refuse new holds on `archived` (and probably `draft`) listings.
+* **Calendar / Reservations:** a function listing the affected future bookings (for the timezone dialog) and the next arrival per sub-unit (multi-unit view). Today both only know `listing_has_future_bookings()`.
+* **Inbox (step 6):** secrets are readable through `listing_secret_ciphertexts()` by `properties.edit` or the service role; Inbox should resolve variables with the service role after its own `inbox.reply` check.
+* **Booking.com (step 9):** OTA amenity codes (`amenities.ota_codes`) and description limits.
+* Geocoding of addresses (lat/lng) needs a provider; manual entry for now.
