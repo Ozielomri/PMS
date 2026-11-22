@@ -64,3 +64,11 @@ src/lib/crypto/        AES-256-GCM field encryption
 src/app/               pages: login, signup, mfa, onboarding, invite, dashboard, settings (team, webhooks, audit)
 tests/unit|db|e2e/     Vitest unit, Vitest + Postgres, Playwright
 ```
+
+## Calendar engine (step 2)
+
+Design: [`docs/plans/step-2-calendar.md`](docs/plans/step-2-calendar.md). SQL API in `supabase/migrations/20261122001000_calendar_core.sql`, typed wrappers in `src/lib/calendar/service.ts`.
+
+- `GET /api/calendar/availability` and `GET /api/calendar/quote`: signed-in users (permissions checked in SQL).
+- `POST /api/calendar/machine/pricing-tool`: external pricing tools, `Authorization: Bearer pmspt_…` (create a token with `public.create_pricing_tool_token`, `calendar.manage`).
+- `/api/calendar/machine/maintenance`: hourly Vercel Schedule (`CRON_SECRET`), keeps 730+ days generated and expires overdue holds.
