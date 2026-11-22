@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ALL_PERMISSIONS, PERMISSIONS, ROLES, ROLE_PERMISSIONS, assignableRoles, can, isRole, roleHasPermission } from "@/lib/auth/permissions";
+import { ALL_PERMISSIONS, HUMAN_ROLES, PERMISSIONS, ROLES, ROLE_PERMISSIONS, assignableRoles, can, isHumanRole, isRole, roleHasPermission } from "@/lib/auth/permissions";
 
 describe("permission matrix (X-01)", () => {
   it("gives admins every permission", () => {
@@ -44,6 +44,14 @@ describe("permission matrix (X-01)", () => {
     ["cleaner", "inbox.view", false],
     ["cleaner", "tasks.view", false],
     ["cleaner", "tasks.update_own", true],
+    // AI agent (docs/plans/ai-agent.md): reads and replies, nothing else
+    ["agent", "inbox.reply", true],
+    ["agent", "reservations.view", true],
+    ["agent", "reservations.view_money", false],
+    ["agent", "reservations.edit", false],
+    ["agent", "reservations.cancel", false],
+    ["agent", "inbox.manage", false],
+    ["agent", "calendar.block", false],
   ] as const)("%s → %s = %s", (role, permission, expected) => {
     expect(roleHasPermission(role, permission)).toBe(expected);
   });
@@ -77,10 +85,13 @@ describe("helpers", () => {
     expect(isRole("front_office")).toBe(true);
     expect(isRole("owner")).toBe(false);
     expect(isRole(undefined)).toBe(false);
+    expect(isRole("agent")).toBe(true);
+    expect(isHumanRole("agent")).toBe(false);
+    expect(ROLES.filter((r) => !isHumanRole(r))).toEqual(["agent"]);
   });
 
-  it("only admins assign roles", () => {
-    expect(assignableRoles("admin")).toEqual([...ROLES]);
+  it("only admins assign roles, and never the agent role", () => {
+    expect(assignableRoles("admin")).toEqual([...HUMAN_ROLES]);
     expect(assignableRoles("manager")).toEqual([]);
   });
 });

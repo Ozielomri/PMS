@@ -11,8 +11,15 @@
  *   Admins hold no permissions until their session is TOTP-verified (aal2), see X-02.
  */
 
-export const ROLES = ["admin", "manager", "front_office", "supervisor", "cleaner"] as const;
+export const ROLES = ["admin", "manager", "front_office", "supervisor", "cleaner", "agent"] as const;
 export type Role = (typeof ROLES)[number];
+
+/**
+ * Roles people can hold. `agent` is the AI agent (docs/plans/ai-agent.md): it acts through the
+ * service role as actor type `agent`, never through a membership (the database refuses one).
+ */
+export const HUMAN_ROLES = ["admin", "manager", "front_office", "supervisor", "cleaner"] as const satisfies readonly Role[];
+export type HumanRole = (typeof HUMAN_ROLES)[number];
 
 export const ROLE_LABELS: Record<Role, string> = {
   admin: "Admin",
@@ -20,6 +27,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   front_office: "Front office",
   supervisor: "Supervisor",
   cleaner: "Cleaner / field staff",
+  agent: "AI agent",
 };
 
 export const PERMISSIONS = {
@@ -148,18 +156,35 @@ const CLEANER: readonly Permission[] = [
   "tasks.update_own",
 ];
 
+// The AI agent: reads what a guest-facing answer needs and replies in the inbox. No money, no
+// edits, no cancellations (docs/plans/ai-agent.md, conservative defaults).
+const AGENT: readonly Permission[] = [
+  "account.view",
+  "properties.view",
+  "calendar.view",
+  "reservations.view",
+  "reservations.view_next_guest",
+  "inbox.view",
+  "inbox.reply",
+];
+
 export const ROLE_PERMISSIONS: Readonly<Record<Role, ReadonlySet<Permission>>> = {
   admin: new Set(ADMIN),
   manager: new Set(MANAGER),
   front_office: new Set(FRONT_OFFICE),
   supervisor: new Set(SUPERVISOR),
   cleaner: new Set(CLEANER),
+  agent: new Set(AGENT),
 };
 
 export type AuthenticatorAssuranceLevel = "aal1" | "aal2";
 
 export function isRole(value: unknown): value is Role {
   return typeof value === "string" && (ROLES as readonly string[]).includes(value);
+}
+
+export function isHumanRole(value: unknown): value is HumanRole {
+  return typeof value === "string" && (HUMAN_ROLES as readonly string[]).includes(value);
 }
 
 /** Static check: does this role grant this permission? */
@@ -181,7 +206,7 @@ export function can(
   return roleHasPermission(member.role, permission);
 }
 
-/** Roles a given role may hand out when inviting. Only admins manage users in this phase. */
-export function assignableRoles(role: Role): Role[] {
-  return role === "admin" ? [...ROLES] : [];
+/** Roles a given role may hand out when inviting. Only admins manage users in this phase; never `agent`. */
+export function assignableRoles(role: Role): HumanRole[] {
+  return role === "admin" ? [...HUMAN_ROLES] : [];
 }

@@ -1,7 +1,9 @@
 # AI agent at the center of the PMS — plan
 
 Decision (22 Nov 2026): the PMS gets an AI agent as a core capability. This replaces the earlier
-"no AI reply drafts in this phase" decision. Status: direction agreed; nothing built yet.
+"no AI reply drafts in this phase" decision. Status: foundations built with step 6 (role `agent`,
+actor type `agent`, approval queue `agent_proposals`, reply drafts in the inbox; see
+`docs/plans/step-6-inbox.md`). Trust levels, auto-sending and other tools are not built yet.
 
 ## Idea
 

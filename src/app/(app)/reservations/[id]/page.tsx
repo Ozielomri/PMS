@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 import { ActionForm } from "@/components/action-form";
 import { Alert, Card, Field, Input, Select, Skeleton, cx, formatDateTime } from "@/components/ui";
-import { requireAuthContext } from "@/lib/auth/context";
+import { requireAuthContext, type AuthContext, type MembershipSummary } from "@/lib/auth/context";
 import { addDays, localToday } from "@/lib/calendar/dates";
 import { formatMoney } from "@/lib/properties/money";
 import { guestName } from "@/lib/reservations/list";
@@ -14,6 +14,9 @@ import { createClient } from "@/lib/supabase/server";
 
 import { addLine, addNote, changeStatus, reassignUnitForm, recordPayment, setStayStatus, updateDetails, updateGuest } from "../actions";
 import { LinkButton, SourceDot, StatusBadge, StayDates, formatDate } from "../_components/bits";
+import { openReservationConversation } from "../../inbox/actions";
+import { ConversationView } from "../../inbox/_components/conversation-view";
+import { InboxLive } from "../../inbox/_components/inbox-live";
 import { CancelPanel, DownloadFile, FileUpload, MergeGuest } from "./detail-client";
 
 export const metadata: Metadata = { title: "Reservation" };
@@ -148,11 +151,7 @@ async function Reservation({ params, searchParams }: { params: Promise<{ id: str
       {tab === "overview" ? <Overview r={r} canEdit={canEdit} canCancel={ctx.can("reservations.cancel")} canCustomRefund={ctx.can("reservations.manage")} /> : null}
       {tab === "guest" ? <GuestTab r={r} canEdit={canEdit} canMerge={ctx.can("reservations.manage")} /> : null}
       {tab === "financials" && ctx.can("reservations.view_money") ? <Financials r={r} canEdit={canEdit} canManage={ctx.can("reservations.manage")} /> : null}
-      {tab === "messages" ? (
-        <Card title="Messages">
-          <p className="text-sm text-slate-500">The guest conversation for this reservation appears here once the inbox is built (step 6).</p>
-        </Card>
-      ) : null}
+      {tab === "messages" ? <MessagesTab r={r} ctx={ctx} tz={tz} /> : null}
       {tab === "tasks" ? (
         <Card title="Tasks">
           <p className="text-sm text-slate-500">Cleaning and other tasks for this stay appear here once tasks are built (step 8).</p>
@@ -589,5 +588,43 @@ async function ActivityTab({ r, tz }: { r: Detail; tz: string }) {
         {(data ?? []).length === 0 ? <li className="text-slate-500">No activity yet.</li> : null}
       </ol>
     </Card>
+  );
+}
+
+/** INB: the guest conversation of this reservation (same thread and composer as the inbox). */
+async function MessagesTab({ r, ctx, tz }: { r: Detail; ctx: AuthContext & { active: MembershipSummary }; tz: string }) {
+  if (!ctx.can("inbox.view")) {
+    return (
+      <Card title="Messages">
+        <p className="text-sm text-slate-500">You do not have access to guest messages.</p>
+      </Card>
+    );
+  }
+  if (r.kind === "owner_stay" || !r.guest_id) {
+    return (
+      <Card title="Messages">
+        <p className="text-sm text-slate-500">Owner stays have no guest conversation.</p>
+      </Card>
+    );
+  }
+  const supabase = await createClient();
+  const { data: conv } = await supabase.from("conversations").select("id").eq("reservation_id", r.id).eq("guest_id", r.guest_id).maybeSingle<{ id: string }>();
+  if (!conv) {
+    return (
+      <Card title="Messages" description="No messages with this guest yet.">
+        {ctx.can("inbox.reply") ? <ActionForm action={openReservationConversation} fields={{ reservationId: r.id }} label="Start conversation" variant="primary" /> : null}
+      </Card>
+    );
+  }
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <InboxLive accountId={r.account_id} />
+        <Link href={`/inbox?tab=all&c=${conv.id}`} className="text-sm text-brand-700 underline-offset-2 hover:underline dark:text-brand-500">
+          Open in inbox
+        </Link>
+      </div>
+      <ConversationView ctx={ctx} conversationId={conv.id} timeZone={tz} />
+    </div>
   );
 }

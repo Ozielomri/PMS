@@ -45,9 +45,22 @@ export const EVENT_TYPES = {
   "ical_feed.updated": { module: "calendar", planned: false },
   "ical_feed.synced": { module: "calendar", planned: false },
   "ical_feed.sync_failed": { module: "calendar", planned: false },
-  // INB-16
-  "message.received": { module: "inbox", planned: true },
-  "message.sent": { module: "inbox", planned: true },
+  // Step 6 — inbox (INB-16 and every inbox state change)
+  "message.received": { module: "inbox", planned: false },
+  "message.sent": { module: "inbox", planned: false },
+  "message.queued": { module: "inbox", planned: false },
+  "message.delivered": { module: "inbox", planned: false },
+  "message.failed": { module: "inbox", planned: false },
+  "message.discarded": { module: "inbox", planned: false },
+  "message.note_added": { module: "inbox", planned: false },
+  "conversation.created": { module: "inbox", planned: false },
+  "conversation.updated": { module: "inbox", planned: false },
+  "saved_reply.created": { module: "inbox", planned: false },
+  "saved_reply.updated": { module: "inbox", planned: false },
+  "inbox_settings.updated": { module: "inbox", planned: false },
+  // AI agent (docs/plans/ai-agent.md): the approval queue
+  "agent_proposal.created": { module: "agent", planned: false },
+  "agent_proposal.updated": { module: "agent", planned: false },
   // TSK-17
   "task.created": { module: "tasks", planned: true },
   "task.updated": { module: "tasks", planned: true },
