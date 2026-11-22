@@ -10,6 +10,7 @@ import { AccountSwitcher } from "./account-switcher";
 
 const NAV: { href: string; label: string; permission: Permission }[] = [
   { href: "/dashboard", label: "Dashboard", permission: "account.view" },
+  { href: "/properties", label: "Properties", permission: "properties.view" },
   { href: "/settings/members", label: "Team", permission: "account.manage_users" },
   { href: "/settings/webhooks", label: "Webhooks", permission: "webhooks.manage" },
   { href: "/settings/audit", label: "Audit log", permission: "audit.view" },
