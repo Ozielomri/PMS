@@ -9,6 +9,8 @@ Detailed steps for each item are in the sections below.
 - [ ] Add `SUPABASE_SECRET_KEY` to Vercel (sensitive, Production + Preview), then redeploy. Every background job fails without it. Steps: "Add SUPABASE_SECRET_KEY to Vercel".
 - [x] Merge PR #7 (schedules + step 7 Automations). Merged; the automations migration is applied to Supabase.
 
+- [ ] Supabase → Authentication → URL Configuration: set **Site URL** to the main app address and add each app domain's `/auth/confirm**` (plus `https://*-ozielomris-projects.vercel.app/**` for previews) to **Redirect URLs**, so sign-in emails return to the app.
+
 ### API keys and secrets
 
 There is no OpenAI integration: the AI features use Anthropic (`ANTHROPIC_API_KEY`). Adding OpenAI would mean a second provider adapter and the same privacy agreement.

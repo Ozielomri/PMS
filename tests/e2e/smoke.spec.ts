@@ -72,6 +72,12 @@ test.describe("public pages and the auth gate", () => {
     await expect(page.getByText("That link is invalid or has expired")).toBeVisible();
   });
 
+  test("an email link sent to the home page is handed to the confirm route", async ({ request }) => {
+    const res = await request.get("/?code=bogus", { maxRedirects: 0 });
+    expect(res.status()).toBe(307);
+    expect(new URL(res.headers().location, "http://x").pathname + new URL(res.headers().location, "http://x").search).toBe("/auth/confirm?code=bogus");
+  });
+
   test("the home page is the public marketing site", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveURL(/\/$/);
