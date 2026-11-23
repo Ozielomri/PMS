@@ -1,5 +1,48 @@
 # TODO
 
+## Checklist (updated 23 Nov 2026)
+
+Detailed steps for each item are in the sections below.
+
+### Now (production needs these)
+
+- [ ] Add `SUPABASE_SECRET_KEY` to Vercel (sensitive, Production + Preview), then redeploy. Every background job fails without it. Steps: "Add SUPABASE_SECRET_KEY to Vercel".
+- [ ] Merge PR #7 (schedules + step 7 Automations). The automations migration is already applied to Supabase.
+
+### API keys and secrets
+
+There is no OpenAI integration: the AI features use Anthropic (`ANTHROPIC_API_KEY`). Adding OpenAI would mean a second provider adapter and the same privacy agreement.
+
+| Key | Used for | Source | Status |
+|---|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Everything | Supabase | Set |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Everything | Supabase | Set |
+| `PMS_ENCRYPTION_KEY` | Encrypted secrets (iCal feeds, door codes) | Generated | Set (sensitive) |
+| `CRON_SECRET` | Scheduled workers | Generated | Set (sensitive) |
+| `SUPABASE_SECRET_KEY` | All workers | Supabase → API Keys → Secret keys | **Missing** |
+| `POSTMARK_SERVER_TOKEN` | Actually emailing guests | Postmark → Server | Missing (optional until real email) |
+| `INBOX_WEBHOOK_SECRET` | Inbound guest email and delivery receipts | Generate a random value | Missing (with Postmark) |
+| `INBOX_EMAIL_FROM`, `INBOX_INBOUND_DOMAIN` | Sender address and reply domain (not secret) | Your email domain | Missing (with Postmark) |
+| `ANTHROPIC_API_KEY` (+ optional `ANTHROPIC_MODEL`) | AI reply drafts, agent, "ask the agent" automations | Anthropic Console (set a spend limit) | Missing: only after the privacy item |
+| `NEXT_PUBLIC_SITE_URL` | Links in emails and invitations | Production URL | Missing (falls back to the Vercel URL) |
+| `NEXT_PUBLIC_SUPABASE_IMAGE_TRANSFORMS=on` | Resized photos | Supabase Pro | Off (optional) |
+| Booking.com Connectivity API credentials + test property | Step 9 | Booking.com Connectivity partner program | Not started: apply early, approval takes time |
+| VAPID keys | Browser and phone push (later) | Generated | Later |
+
+### Accounts and setup
+
+- [ ] Privacy (CCPA): data agreement with Anthropic and a privacy policy update, before any real guest data goes to the AI. Then add `ANTHROPIC_API_KEY`.
+- [ ] Postmark: sending domain (DKIM, Return-Path), inbound MX record, the two webhooks, then the variables above.
+- [ ] Vercel Pro (optional): every-minute schedules for messages, automations and webhooks.
+- [ ] Apply for Booking.com Connectivity API access (credentials + test property).
+
+### Build
+
+- [ ] Signed-in visual check of the Automations screens.
+- [ ] Step 8: Tasks + staff PWA (also unlocks the "create task" automation action).
+- [ ] Step 9: Booking.com integration (needs the credentials above).
+- [ ] Inbox follow-ups: attachments, @mention notifications, push, AI auto-replies.
+
 ## Privacy: AI provider data agreement (CCPA/CPRA)
 
 The AI agent (`docs/plans/ai-agent.md`) sends guest data (names, messages, stay details) to the AI provider. Before any real guest data is used:
