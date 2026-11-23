@@ -7,7 +7,7 @@ Detailed steps for each item are in the sections below.
 ### Now (production needs these)
 
 - [ ] Add `SUPABASE_SECRET_KEY` to Vercel (sensitive, Production + Preview), then redeploy. Every background job fails without it. Steps: "Add SUPABASE_SECRET_KEY to Vercel".
-- [ ] Merge PR #7 (schedules + step 7 Automations). The automations migration is already applied to Supabase.
+- [x] Merge PR #7 (schedules + step 7 Automations). Merged; the automations migration is applied to Supabase.
 
 ### API keys and secrets
 
