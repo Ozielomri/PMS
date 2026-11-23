@@ -46,6 +46,7 @@ Idempotent endpoints, protected by `Authorization: Bearer $CRON_SECRET`; overlap
 
 - `POST /api/internal/webhooks/dispatch` sends due webhook deliveries
 - `POST /api/internal/events/process` runs internal event consumers (none registered until automations, step 7)
+- `POST /api/internal/automations/run` runs due automation jobs (step 7)
 - `POST /api/internal/reservations/expire` expires requests past their approval deadline, closes past inquiries and expires quotes (the reservation list, dashboard and quotes page also sweep their own account on load)
 - `POST /api/internal/ical/sync` imports due iCal feeds (CAL-10; schedule every 15 minutes)
 - `POST /api/internal/inbox/send` sends queued guest messages with retries and backoff (sending a reply also kicks it for that account, so replies go out without the schedule)
@@ -100,6 +101,15 @@ Plan: [`docs/plans/step-6-inbox.md`](docs/plans/step-6-inbox.md). Migrations `20
 
 - **AI drafts (INB-11, AI-first):** "Suggest reply" asks the agent (role `agent`, actor type `agent`; see [`docs/plans/ai-agent.md`](docs/plans/ai-agent.md)) for a draft grounded in the thread, the reservation and the listing's content and non-secret custom fields. The draft is stored in the approval queue (`agent_proposals`) and shown in the composer; a person edits and sends it. Nothing is sent automatically. Needs `ANTHROPIC_API_KEY` and `SUPABASE_SECRET_KEY`; without them the button is disabled with the reason. Switch it off per account on `/inbox/log`.
 - **Events:** `message.received`, `message.queued`, `message.sent`, `message.delivered`, `message.failed`, `message.discarded`, `message.note_added`, `conversation.created/updated`, `saved_reply.*`, `inbox_settings.updated`, `agent_proposal.*`.
+
+## Automations (step 7)
+
+Plan: [`docs/plans/step-7-automations.md`](docs/plans/step-7-automations.md); migration `20261126001000_automations.sql`; code in `src/lib/automations/`.
+
+- `/automations`: rules (trigger + offset + optional fixed local time + conditions → action) and one-click common rules (confirmation, check-in instructions, mid-stay check, check-out reminder, review request). `/automations/new` and `/automations/<id>`: the builder with language variants, a variable picker, a preview against a sample reservation, a count of matching reservations and "send a test to myself". `/automations/log`: every run.
+- Scheduling is in the database: a trigger on `reservations` re-evaluates the account's rules on every change (dates, ETA/ETD, listing, status, guests), so jobs move, appear or are canceled in the same transaction; activating, editing, pausing or deleting a rule reschedules its pending jobs. Check-in/out anchors use ETA/ETD or the listing's default times, in the listing timezone. One job per rule × reservation × occurrence (idempotent).
+- Actions: a message to the guest (into the reservation's conversation, sent by the inbox outbox), an email to a fixed address (owner, cleaner), or "ask the AI agent" to draft a message into the approval queue (needs `ANTHROPIC_API_KEY`). Missing variable values fail the run visibly instead of sending a broken message.
+- Worker: `POST /api/internal/automations/run` (cron secret), scheduled every 15 minutes on Hobby; every minute on Pro (TODO.md). Each reservation's **Automations** tab shows its runs with skip, send now and edit-this-message.
 
 ## Layout
 

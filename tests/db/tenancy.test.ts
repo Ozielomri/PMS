@@ -54,6 +54,9 @@ const ACCOUNT_SCOPED_TABLES = [
   "saved_replies",
   "conversation_reads",
   "agent_proposals",
+  // Step 7 — automations
+  "automation_rules",
+  "automation_jobs",
 ];
 
 describe("row level security", () => {
@@ -183,6 +186,10 @@ describe("row level security", () => {
       "select public.record_outbound_result(gen_random_uuid(), 'sent')",
       "select public.record_delivery_event('postmark', 'x', 'delivered')",
       "select public.agent_propose_reply(gen_random_uuid(), 'x', gen_random_uuid())",
+      // Step 7 — automations worker
+      "select * from public.claim_automation_jobs()",
+      "select public.complete_automation_job(gen_random_uuid(), 1, 'sent')",
+      "select public.automation_job_conversation(gen_random_uuid())",
     ]) {
       await expect(asUser(admin, (db) => db.query(sql))).rejects.toThrow(/permission denied/);
     }
