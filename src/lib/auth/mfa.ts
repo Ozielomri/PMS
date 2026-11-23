@@ -17,11 +17,14 @@ export type MfaRequirement =
   | "enroll";
 
 export function mfaRequirement(input: {
+  /** The platform switch (public.mfa_required()). When off, nobody is asked for a code. */
+  required?: boolean;
   /** Admin in the account being accessed (or in any account, to be safe). */
   isAdmin: boolean;
   currentLevel: AssuranceLevel | null | undefined;
   nextLevel: AssuranceLevel | null | undefined;
 }): MfaRequirement {
+  if (input.required === false) return "ok";
   const current = input.currentLevel ?? "aal1";
   const next = input.nextLevel ?? current;
 

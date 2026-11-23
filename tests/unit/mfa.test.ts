@@ -18,6 +18,14 @@ describe("mfaRequirement (X-02)", () => {
   });
 });
 
+describe("mfaRequirement with the switch off", () => {
+  it("never asks for a code", () => {
+    expect(mfaRequirement({ required: false, isAdmin: true, currentLevel: "aal1", nextLevel: "aal1" })).toBe("ok");
+    expect(mfaRequirement({ required: false, isAdmin: true, currentLevel: "aal1", nextLevel: "aal2" })).toBe("ok");
+    expect(mfaRequirement({ required: true, isAdmin: true, currentLevel: "aal1", nextLevel: "aal2" })).toBe("verify");
+  });
+});
+
 describe("normaliseTotpCode", () => {
   it("accepts 6 digits with spaces or dashes", () => {
     expect(normaliseTotpCode("123456")).toBe("123456");

@@ -20,6 +20,6 @@ export async function createAccount(_prev: { error?: string } | null, formData: 
   if (error || !data) return { error: "Could not create the account. Try again." };
 
   await setActiveAccount(String(data));
-  // New admins enrol TOTP before anything else (X-02).
-  redirect("/mfa?next=/dashboard");
+  // When the MFA switch is on, the dashboard sends new admins to enrol TOTP first (X-02).
+  redirect("/dashboard");
 }

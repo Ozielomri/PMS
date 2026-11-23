@@ -193,16 +193,17 @@ export function roleHasPermission(role: Role, permission: Permission): boolean {
 }
 
 /**
- * Effective check, identical to private.has_permission in the database: an admin whose session
- * is not TOTP-verified holds no permissions.
+ * Effective check, identical to private.has_permission in the database: while the MFA switch is
+ * on, an admin whose session is not TOTP-verified holds no permissions.
  */
 export function can(
   member: { role: Role; status?: string } | null | undefined,
   permission: Permission,
   aal: AuthenticatorAssuranceLevel,
+  mfaRequired = true,
 ): boolean {
   if (!member || (member.status !== undefined && member.status !== "active")) return false;
-  if (member.role === "admin" && aal !== "aal2") return false;
+  if (mfaRequired && member.role === "admin" && aal !== "aal2") return false;
   return roleHasPermission(member.role, permission);
 }
 
