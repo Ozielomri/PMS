@@ -1,3 +1,17 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "schedules": {
+    "ical-sync": {
+      "schedule": "*/15 * * * *",
+      "path": "/api/internal/ical/sync"
+    },
+    "reservation-expiry": {
+      "schedule": "*/15 * * * *",
+      "path": "/api/internal/reservations/expire"
+    },
+    "calendar-maintenance": {
+      "schedule": "17 * * * *",
+      "path": "/api/calendar/machine/maintenance"
+    }
+  }
 }

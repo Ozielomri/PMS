@@ -39,55 +39,47 @@ Until this is done the inbox uses the development `log` adapter: replies are sto
 - **Booking.com messages** (step 9): conversations and messages already have a `channel` column (`booking_com`); add an adapter like `src/lib/inbox/email/` and allow the channel in `inbox_send_message`.
 - **Agent auto-replies** (ai-agent plan, trust level *auto*): not built; drafts only.
 
-## Move to Vercel Pro and enable the schedules
+## Move to Vercel Pro and enable the every-minute schedules
 
-The demo deployment runs on the Vercel **Hobby** plan, which allows a schedule at most every 15 minutes. The workers need every minute (webhooks, event consumers; automations later need jobs within 60 s), so the schedules are switched **off** for now. Until they are on:
+The demo deployment runs on the Vercel **Hobby** plan, which allows a schedule at most every 15 minutes (with up to 15 minutes of jitter). The schedules that fit are **on** in `vercel.json`: `ical-sync` (every 15 min), `reservation-expiry` (every 15 min; every 5 on Pro) and `calendar-maintenance` (hourly). The workers that need every minute are **off** until Pro. Until then:
 
 - webhook deliveries stay queued (nothing is sent);
 - inbox replies whose first send attempt failed are not retried automatically (use Retry in the thread or the message log);
-- the calendar is not extended past its initial 730+ days, and expired holds are only ignored, not swept;
-- requests past their approval deadline and expired quotes are only swept when someone opens the reservation list, the dashboard or the quotes page;
-- iCal feeds (CAL-10) are only imported when someone presses **Sync now** (or adds the feed) in the listing's iCal tab. The `ical-sync` schedule (every 15 minutes) is allowed on Hobby, so it could be enabled on its own before the move to Pro.
+- internal event consumers do not run (none are registered until automations, step 7).
+
+The running schedules need `SUPABASE_SECRET_KEY` in Vercel (see the next item); without it every run fails.
 
 Steps:
 
 1. Upgrade the Vercel team to **Pro**.
-2. Make sure `CRON_SECRET` is set in the project's environment variables (Production; it is already set for the demo). Vercel sends it as `Authorization: Bearer …`. Also add `SUPABASE_SECRET_KEY` (Supabase → Project Settings → API keys → secret key) as a **sensitive** variable: the workers need it and it is not set yet.
-3. Put this block back into `vercel.json` (next to `$schema`) and deploy:
+2. Add these to the `schedules` block in `vercel.json`, change `reservation-expiry` to `*/5 * * * *`, and deploy:
 
 ```json
-"schedules": {
-  "webhook-dispatch": {
-    "schedule": "* * * * *",
-    "path": "/api/internal/webhooks/dispatch"
-  },
-  "event-consumers": {
-    "schedule": "* * * * *",
-    "path": "/api/internal/events/process"
-  },
-  "calendar-maintenance": {
-    "schedule": "17 * * * *",
-    "path": "/api/calendar/machine/maintenance"
-  },
-  "reservation-expiry": {
-    "schedule": "*/5 * * * *",
-    "path": "/api/internal/reservations/expire"
-  },
-  "ical-sync": {
-    "schedule": "*/15 * * * *",
-    "path": "/api/internal/ical/sync"
-  },
-  "inbox-send": {
-    "schedule": "* * * * *",
-    "path": "/api/internal/inbox/send"
-  }
+"webhook-dispatch": {
+  "schedule": "* * * * *",
+  "path": "/api/internal/webhooks/dispatch"
+},
+"event-consumers": {
+  "schedule": "* * * * *",
+  "path": "/api/internal/events/process"
+},
+"inbox-send": {
+  "schedule": "* * * * *",
+  "path": "/api/internal/inbox/send"
 }
 ```
 
-(Without the schedule, replies are still sent right after they are written; the schedule picks up retries and anything a crash left queued.)
+3. Check the runs: Vercel dashboard → project → Schedules (or `vercel schedules executions list webhook-dispatch --since 1h`).
+4. Remove this item.
 
-4. Check the runs: Vercel dashboard → project → Schedules (or `vercel schedules executions list webhook-dispatch --since 1h`).
-5. Remove this item.
+## Add SUPABASE_SECRET_KEY to Vercel
+
+The workers (iCal import, expiry sweep, calendar maintenance, inbox sending and inbound email, webhooks) use the Supabase secret key. `PMS_ENCRYPTION_KEY` and `CRON_SECRET` are already set.
+
+1. Supabase → project → Project Settings → API Keys → **Secret keys** → copy the secret key (`sb_secret_…`).
+2. Vercel → project `pms` → Settings → Environment Variables → Add: key `SUPABASE_SECRET_KEY`, the value, environments **Production** and **Preview**, and tick **Sensitive**.
+3. Redeploy production (Deployments → latest → ⋯ → Redeploy) so the running site picks it up.
+4. Remove this item.
 
 Until then, any worker can be run by hand:
 
