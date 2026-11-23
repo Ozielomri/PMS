@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -12,8 +13,15 @@ export type FormState = { error?: string; message?: string } | null;
 const email = z.string().trim().toLowerCase().email("Enter a valid email address");
 const PASSWORD_MIN_LENGTH = 12;
 
-function confirmUrl(next: string) {
-  return `${siteUrl()}/auth/confirm?next=${encodeURIComponent(next)}`;
+/**
+ * Email links must come back to the domain the person signed in on: the PKCE verifier cookie
+ * lives there, so a link to another domain (e.g. a second Vercel alias) cannot finish sign-in.
+ * Supabase still only follows links on its Redirect URLs allow-list.
+ */
+async function confirmUrl(next: string) {
+  const origin = (await headers()).get("origin");
+  const base = origin && /^https?:\/\/[^/\s]+$/.test(origin) ? origin : siteUrl();
+  return `${base}/auth/confirm?next=${encodeURIComponent(next)}`;
 }
 
 export async function signInWithPassword(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -39,7 +47,7 @@ export async function sendMagicLink(_prev: FormState, formData: FormData): Promi
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email: parsed.data,
-    options: { emailRedirectTo: confirmUrl(next), shouldCreateUser: true },
+    options: { emailRedirectTo: await confirmUrl(next), shouldCreateUser: true },
   });
   if (error) {
     return { error: error.status === 429 ? "Too many requests. Wait a minute and try again." : "Could not send the link. Try again." };
@@ -63,7 +71,7 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: { data: { full_name: parsed.data.fullName }, emailRedirectTo: confirmUrl(next) },
+    options: { data: { full_name: parsed.data.fullName }, emailRedirectTo: await confirmUrl(next) },
   });
   if (error) {
     if (error.code === "weak_password") return { error: "That password is too weak or has appeared in a data breach." };
