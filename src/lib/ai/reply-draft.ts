@@ -32,6 +32,8 @@ export interface DraftInput {
   amenities: string[];
   customFields: { key: string; label: string; type: string; value: string }[];
   thread: { kind: "inbound" | "outbound" | "note"; author: string; body: string; at: string }[];
+  /** What the team wants this message to do (automation "ask the agent" rules). */
+  instructions?: string | null;
 }
 
 export interface Draft {
@@ -87,7 +89,9 @@ export function buildDraftPrompt(input: DraftInput) {
     "<conversation>",
     ...thread.map((m) => `[${m.at}] ${m.kind === "inbound" ? `Guest (${m.author})` : `Team (${m.author})`}:\n${m.body.slice(0, 2000)}`),
     "</conversation>",
-    "Draft the next reply from the team.",
+    input.instructions
+      ? `<team_instructions>\n${input.instructions.slice(0, 2000)}\n</team_instructions>\n\nDraft the next message from the team, following the team instructions above.`
+      : "Draft the next reply from the team.",
   ];
 
   return {
@@ -100,6 +104,7 @@ export function buildDraftPrompt(input: DraftInput) {
       amenities: input.amenities.length,
       custom_fields: custom.map((f) => f.key),
       thread_messages: thread.length,
+      ...(input.instructions ? { instructions: true } : {}),
     },
   };
 }

@@ -7,6 +7,7 @@ export const NAV: { href: string; label: string; permission: Permission }[] = [
   { href: "/calendar", label: "Calendar", permission: "calendar.view" },
   { href: "/reservations", label: "Reservations", permission: "reservations.view" },
   { href: "/properties", label: "Properties", permission: "properties.view" },
+  { href: "/automations", label: "Automations", permission: "automations.view" },
 ];
 
 export const SETTINGS_NAV: { href: string; label: string; permission: Permission }[] = [

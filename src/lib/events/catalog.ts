@@ -61,6 +61,11 @@ export const EVENT_TYPES = {
   // AI agent (docs/plans/ai-agent.md): the approval queue
   "agent_proposal.created": { module: "agent", planned: false },
   "agent_proposal.updated": { module: "agent", planned: false },
+  // Step 7 — automations (AUT-*)
+  "automation_rule.created": { module: "automations", planned: false },
+  "automation_rule.updated": { module: "automations", planned: false },
+  "automation_job.created": { module: "automations", planned: false },
+  "automation_job.updated": { module: "automations", planned: false },
   // TSK-17
   "task.created": { module: "tasks", planned: true },
   "task.updated": { module: "tasks", planned: true },

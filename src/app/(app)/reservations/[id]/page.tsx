@@ -15,6 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 import { addLine, addNote, changeStatus, reassignUnitForm, recordPayment, setStayStatus, updateDetails, updateGuest } from "../actions";
 import { LinkButton, SourceDot, StatusBadge, StayDates, formatDate } from "../_components/bits";
 import { openReservationConversation } from "../../inbox/actions";
+import { ReservationTimeline } from "../../automations/_components/reservation-timeline";
 import { ConversationView } from "../../inbox/_components/conversation-view";
 import { InboxLive } from "../../inbox/_components/inbox-live";
 import { CancelPanel, DownloadFile, FileUpload, MergeGuest } from "./detail-client";
@@ -26,6 +27,7 @@ const TABS = [
   ["guest", "Guest"],
   ["financials", "Financials"],
   ["messages", "Messages"],
+  ["automations", "Automations"],
   ["tasks", "Tasks"],
   ["notes", "Notes & files"],
   ["activity", "Activity"],
@@ -72,13 +74,13 @@ interface Detail {
   refund_percent: number | null;
   tags: string[];
   created_at: string;
-  guest: { id: string; first_name: string; last_name: string | null; email: string | null; phone: string | null; notes: string | null; tags: string[] } | null;
+  guest: { id: string; first_name: string; last_name: string | null; email: string | null; phone: string | null; notes: string | null; tags: string[]; language: string | null } | null;
   listing: { id: string; internal_name: string; timezone: string; type: string; parent_id: string | null } | null;
   unit: { id: string; internal_name: string; parent_id: string | null } | null;
 }
 
 const SELECT =
-  "*, guest:guests(id, first_name, last_name, email, phone, notes, tags), " +
+  "*, guest:guests(id, first_name, last_name, email, phone, notes, tags, language), " +
   "listing:listings!reservations_listing_id_account_id_fkey(id, internal_name, timezone, type, parent_id), " +
   "unit:listings!reservations_unit_id_account_id_fkey(id, internal_name, parent_id)";
 
@@ -133,7 +135,7 @@ async function Reservation({ params, searchParams }: { params: Promise<{ id: str
       ) : null}
 
       <nav aria-label="Reservation sections" className="mb-6 flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800">
-        {TABS.filter(([t]) => t !== "financials" || ctx.can("reservations.view_money")).map(([t, label]) => (
+        {TABS.filter(([t]) => (t !== "financials" || ctx.can("reservations.view_money")) && (t !== "automations" || ctx.can("automations.view"))).map(([t, label]) => (
           <Link
             key={t}
             href={`/reservations/${r.id}${t === "overview" ? "" : `?tab=${t}`}`}
@@ -152,6 +154,9 @@ async function Reservation({ params, searchParams }: { params: Promise<{ id: str
       {tab === "guest" ? <GuestTab r={r} canEdit={canEdit} canMerge={ctx.can("reservations.manage")} /> : null}
       {tab === "financials" && ctx.can("reservations.view_money") ? <Financials r={r} canEdit={canEdit} canManage={ctx.can("reservations.manage")} /> : null}
       {tab === "messages" ? <MessagesTab r={r} ctx={ctx} tz={tz} /> : null}
+      {tab === "automations" && ctx.can("automations.view") ? (
+        <ReservationTimeline reservationId={r.id} timeZone={tz} canEdit={ctx.can("automations.edit")} guestLanguage={r.guest?.language ?? null} />
+      ) : null}
       {tab === "tasks" ? (
         <Card title="Tasks">
           <p className="text-sm text-slate-500">Cleaning and other tasks for this stay appear here once tasks are built (step 8).</p>
