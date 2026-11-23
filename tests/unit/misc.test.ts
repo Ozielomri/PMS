@@ -6,10 +6,10 @@ import { actorHeaders, clientIpFromHeaders } from "@/lib/supabase/request-contex
 import { supabaseDeliveryStore, supabaseEventQueueStore } from "@/lib/webhooks/supabase-store";
 
 describe("isPublicPath", () => {
-  it.each(["/login", "/signup", "/auth/confirm", "/invite/abc", "/api/internal/webhooks/dispatch"])("%s is public", (p) =>
+  it.each(["/", "/login", "/signup", "/auth/confirm", "/invite/abc", "/api/internal/webhooks/dispatch"])("%s is public", (p) =>
     expect(isPublicPath(p)).toBe(true),
   );
-  it.each(["/", "/dashboard", "/settings/members", "/mfa", "/onboarding", "/loginx", "/invite"])("%s needs a session", (p) =>
+  it.each(["/dashboard", "/x", "//dashboard", "/settings/members", "/mfa", "/onboarding", "/loginx", "/invite"])("%s needs a session", (p) =>
     expect(isPublicPath(p)).toBe(false),
   );
 });

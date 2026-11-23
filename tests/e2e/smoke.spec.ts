@@ -18,12 +18,12 @@ test.describe("public pages and the auth gate", () => {
     await expect(page.getByLabel("Password")).toHaveAttribute("minlength", "12");
   });
 
-  for (const path of ["/", "/dashboard", "/settings/members", "/settings/webhooks", "/settings/audit", "/mfa", "/onboarding"]) {
+  for (const path of ["/dashboard", "/settings/members", "/settings/webhooks", "/settings/audit", "/mfa", "/onboarding"]) {
     test(`signed-out visit to ${path} redirects to sign-in`, async ({ page }) => {
       await page.goto(path);
       await expect(page).toHaveURL(/\/login\?next=/);
       const next = new URL(page.url()).searchParams.get("next");
-      expect(next).toBe(path === "/" ? "/dashboard" : path);
+      expect(next).toBe(path);
     });
   }
 
@@ -70,5 +70,14 @@ test.describe("public pages and the auth gate", () => {
     await page.goto("/auth/confirm?token_hash=bogus&type=magiclink&next=/dashboard");
     await expect(page).toHaveURL(/\/login\?error=link/);
     await expect(page.getByText("That link is invalid or has expired")).toBeVisible();
+  });
+
+  test("the home page is the public marketing site", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("One calendar");
+    await expect(page.getByRole("link", { name: "Sign in" }).first()).toHaveAttribute("href", "/login");
+    await expect(page.getByRole("link", { name: "Start free" }).first()).toHaveAttribute("href", "/signup");
+    for (const id of ["features", "ai", "pricing", "faq"]) await expect(page.locator(`#${id}`)).toBeAttached();
   });
 });
