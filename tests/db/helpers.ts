@@ -20,6 +20,11 @@ export interface RequestContext {
   role?: "authenticated" | "anon" | "service_role";
   aal?: "aal1" | "aal2";
   headers?: Record<string, string>;
+  /**
+   * X-02 admin MFA gate. Tests run with it on (the stricter setting) unless they say otherwise;
+   * false uses the platform switch in private.app_settings (off during the trial).
+   */
+  requireMfa?: boolean;
 }
 
 /**
@@ -38,10 +43,10 @@ export async function as<T>(ctx: RequestContext, fn: (db: Db) => Promise<T>): Pr
   const client = await pool.connect();
   try {
     await client.query("begin");
-    await client.query("select set_config('request.jwt.claims', $1, true), set_config('request.headers', $2, true)", [
-      JSON.stringify(claims),
-      JSON.stringify(ctx.headers ?? {}),
-    ]);
+    await client.query(
+      "select set_config('request.jwt.claims', $1, true), set_config('request.headers', $2, true), set_config('pms.mfa_required', $3, true)",
+      [JSON.stringify(claims), JSON.stringify(ctx.headers ?? {}), ctx.requireMfa === false ? "" : "on"],
+    );
     await client.query(`set local role ${role}`);
     const result = await fn(client);
     await client.query("commit");

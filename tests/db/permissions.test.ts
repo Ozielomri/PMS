@@ -52,6 +52,13 @@ describe("private.has_permission", () => {
     expect(await hasPermission(admin, accountId, "account.manage_users", "aal2")).toBe(true);
     expect(await hasPermission(admin, accountId, "account.manage_users", "aal1")).toBe(false);
     expect(await hasPermission(admin, accountId, "account.view", "aal1")).toBe(false);
+    // With the platform switch off (the trial default) the aal1 admin holds its permissions.
+    expect(
+      await asUser(admin, async (db) => (await db.query("select private.has_permission($1, 'account.view') as ok", [accountId])).rows[0].ok, {
+        aal: "aal1",
+        requireMfa: false,
+      }),
+    ).toBe(true);
   });
 
   it("does not require aal2 for non-admin roles", async () => {

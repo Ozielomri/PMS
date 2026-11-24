@@ -48,7 +48,7 @@ export const getAuthContext = cache(async (): Promise<AuthContext | null> => {
   const claims = claimsData?.claims;
   if (!claims?.sub) return null;
 
-  const [{ data: aalData }, { data: rows }] = await Promise.all([
+  const [{ data: aalData }, { data: rows }, { data: mfaSwitch }] = await Promise.all([
     supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
     supabase
       .from("memberships")
@@ -57,7 +57,10 @@ export const getAuthContext = cache(async (): Promise<AuthContext | null> => {
       .eq("status", "active")
       .order("created_at", { ascending: true })
       .returns<MembershipRow[]>(),
+    // X-02 platform switch; if it cannot be read, require MFA (fail closed).
+    supabase.rpc("mfa_required"),
   ]);
+  const mfaRequired = mfaSwitch !== false;
 
   const memberships: MembershipSummary[] = (rows ?? [])
     .filter((r) => isRole(r.role))
@@ -68,6 +71,7 @@ export const getAuthContext = cache(async (): Promise<AuthContext | null> => {
 
   const aal: AssuranceLevel = toAal(claims.aal) ?? toAal(aalData?.currentLevel) ?? "aal1";
   const mfa = mfaRequirement({
+    required: mfaRequired,
     isAdmin: memberships.some((m) => m.role === "admin"),
     currentLevel: aal,
     nextLevel: toAal(aalData?.nextLevel),
@@ -79,7 +83,7 @@ export const getAuthContext = cache(async (): Promise<AuthContext | null> => {
     mfa,
     memberships,
     active,
-    can: (permission) => can(active, permission, aal),
+    can: (permission) => can(active, permission, aal, mfaRequired),
   };
 });
 

@@ -67,6 +67,8 @@ describe("can()", () => {
   it("requires aal2 for admins (X-02)", () => {
     expect(can({ role: "admin" }, "account.view", "aal1")).toBe(false);
     expect(can({ role: "admin" }, "account.view", "aal2")).toBe(true);
+    // Switch off: no TOTP needed.
+    expect(can({ role: "admin" }, "account.view", "aal1", false)).toBe(true);
   });
 
   it("does not require aal2 for other roles", () => {

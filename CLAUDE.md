@@ -16,6 +16,7 @@ Full requirements: `docs/requirements.md` (requirement IDs PRP, CAL, RES, INB, A
 - Staff app: responsive web / PWA only
 - UI: English only; currency USD; units sq ft
 - Privacy: US (CCPA/CPRA); Supabase in a US region
+- Admin 2FA (X-02) off for the trial (23 Nov 2026): one switch, `private.app_settings.mfa_required`, read by both the database and the app. Turn on with `update private.app_settings set mfa_required = true;`
 
 ## Stack
 - Next.js (App Router, TypeScript, strict mode) on Vercel

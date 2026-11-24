@@ -40,6 +40,8 @@ There is no OpenAI integration: the AI features use Anthropic (`ANTHROPIC_API_KE
 
 ### Build
 
+- [ ] Before real customers: turn admin 2FA back on (`update private.app_settings set mfa_required = true;` in Supabase). It is off for the trial; no code change needed.
+
 - [ ] Signed-in visual check of the Automations screens.
 - [ ] Step 8: Tasks + staff PWA (also unlocks the "create task" automation action).
 - [ ] Step 9: Booking.com integration (needs the credentials above).
